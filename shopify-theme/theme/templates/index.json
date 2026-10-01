@@ -1,0 +1,74 @@
+{
+  "sections": {
+    "hero": {
+      "type": "image-banner",
+      "blocks": {
+        "hero-heading": {
+          "type": "heading",
+          "settings": { "heading": "Pokémon & One Piece trading cards" }
+        },
+        "hero-text": {
+          "type": "text",
+          "settings": { "text": "<p>Single cards and bulk packs by rarity. Replace this sentence with your store introduction.</p>" }
+        },
+        "hero-button-pokemon": {
+          "type": "button",
+          "settings": { "label": "Shop Pokémon", "link": "/collections/pokemon", "style": "primary" }
+        },
+        "hero-button-onepiece": {
+          "type": "button",
+          "settings": { "label": "Shop One Piece", "link": "/collections/one-piece", "style": "accent" }
+        }
+      },
+      "block_order": ["hero-heading", "hero-text", "hero-button-pokemon", "hero-button-onepiece"],
+      "settings": { "height": "medium", "text_alignment": "left", "overlay_opacity": 35 }
+    },
+    "shop-by": {
+      "type": "link-cards",
+      "blocks": {
+        "card-pokemon": {
+          "type": "card",
+          "settings": { "title": "Pokémon", "text": "Single cards & bulk packs", "cta": "Shop Pokémon", "link": "/collections/pokemon", "theme": "pokemon" }
+        },
+        "card-onepiece": {
+          "type": "card",
+          "settings": { "title": "One Piece", "text": "Single cards & bulk packs", "cta": "Shop One Piece", "link": "/collections/one-piece", "theme": "one-piece" }
+        },
+        "card-wholesale": {
+          "type": "card",
+          "settings": { "title": "Wholesale", "text": "Buying in bulk? Send us an inquiry.", "cta": "Wholesale inquiry", "link": "/pages/wholesale-inquiry", "theme": "accent" }
+        },
+        "card-feedback": {
+          "type": "card",
+          "settings": { "title": "Customer feedback", "text": "What our buyers say.", "cta": "Read feedback", "link": "/pages/feedback", "theme": "default" }
+        }
+      },
+      "block_order": ["card-pokemon", "card-onepiece", "card-wholesale", "card-feedback"],
+      "settings": { "heading": "Shop by game" }
+    },
+    "featured-pokemon": {
+      "type": "featured-collection",
+      "settings": { "heading": "Pokémon", "collection_handle": "pokemon", "products_to_show": 8 }
+    },
+    "featured-onepiece": {
+      "type": "featured-collection",
+      "settings": { "heading": "One Piece", "collection_handle": "one-piece", "products_to_show": 8 }
+    },
+    "about": {
+      "type": "rich-text",
+      "blocks": {
+        "about-heading": {
+          "type": "heading",
+          "settings": { "heading": "About us" }
+        },
+        "about-text": {
+          "type": "text",
+          "settings": { "text": "<p>Add your store introduction here: who you are, where you ship from, how cards are graded and packed.</p>" }
+        }
+      },
+      "block_order": ["about-heading", "about-text"],
+      "settings": { "alignment": "center", "background": true }
+    }
+  },
+  "order": ["hero", "shop-by", "featured-pokemon", "featured-onepiece", "about"]
+}

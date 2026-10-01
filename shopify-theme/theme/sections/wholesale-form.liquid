@@ -1,0 +1,163 @@
+{%- comment -%}
+  S04 — Wholesale Inquiry form at /pages/wholesale-inquiry.
+  Uses Shopify's native contact form: every submission is emailed to the
+  "Sender email" / store contact email set in Settings > Notifications (and
+  Settings > Store details). No app required.
+  Fields: Name, Country, Email, Products & Quantity, Preferred contact (+ ID), Message.
+{%- endcomment -%}
+<section class="section wholesale" id="wholesale-inquiry">
+  <div class="page-width page-width--narrow">
+    <h1 class="page__title">{{ section.settings.heading | default: page.title | escape }}</h1>
+    {%- if page.content != blank -%}
+      <div class="rte wholesale__intro">{{ page.content }}</div>
+    {%- elsif section.settings.intro != blank -%}
+      <div class="rte wholesale__intro">{{ section.settings.intro }}</div>
+    {%- endif -%}
+
+    {%- form 'contact', id: 'WholesaleForm', class: 'wholesale-form', novalidate: 'novalidate', data-validate-form: '' -%}
+      {%- if form.posted_successfully? -%}
+        <div class="form-message form-message--success" role="status" tabindex="-1" autofocus>
+          {{ section.settings.success_message | default: 'Thank you! Your wholesale inquiry has been sent. We will contact you soon.' | escape }}
+        </div>
+      {%- elsif form.errors -%}
+        <div class="form-message form-message--error" role="alert" tabindex="-1" autofocus>
+          <p>Please correct the following:</p>
+          {{ form.errors | default_errors }}
+        </div>
+      {%- endif -%}
+
+      <input type="hidden" name="contact[form_type]" value="Wholesale Inquiry">
+
+      <div class="field">
+        <label for="Wholesale-name">Name <span aria-hidden="true">*</span></label>
+        <input
+          type="text"
+          id="Wholesale-name"
+          name="contact[name]"
+          autocomplete="name"
+          required
+          minlength="2"
+          maxlength="100"
+          value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+          data-error="Please enter your name (at least 2 characters)."
+        >
+        <p class="field__error" hidden></p>
+      </div>
+
+      <div class="field">
+        <label for="Wholesale-country">Country <span aria-hidden="true">*</span></label>
+        <select id="Wholesale-country" name="contact[country]" autocomplete="country-name" required data-error="Please select your country.">
+          <option value="">Select a country</option>
+          {%- for country in localization.available_countries -%}
+            <option value="{{ country.name | escape }}"{% if country.iso_code == localization.country.iso_code %} selected{% endif %}>{{ country.name }}</option>
+          {%- endfor -%}
+          <option value="Other">Other</option>
+        </select>
+        <p class="field__error" hidden></p>
+      </div>
+
+      <div class="field">
+        <label for="Wholesale-email">Email <span aria-hidden="true">*</span></label>
+        <input
+          type="email"
+          id="Wholesale-email"
+          name="contact[email]"
+          autocomplete="email"
+          spellcheck="false"
+          autocapitalize="off"
+          required
+          value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+          data-error="Please enter a valid email address (e.g. name@example.com)."
+        >
+        <p class="field__error" hidden></p>
+      </div>
+
+      <div class="field">
+        <label for="Wholesale-products">Products &amp; Quantity <span aria-hidden="true">*</span></label>
+        <textarea
+          id="Wholesale-products"
+          name="contact[Products and quantity]"
+          rows="4"
+          required
+          minlength="3"
+          placeholder="e.g. product name / set, rarity, number of packs"
+          data-error="Please list the products and quantities you are interested in."
+        ></textarea>
+        <p class="field__error" hidden></p>
+      </div>
+
+      <fieldset class="field field--group">
+        <legend>Preferred contact <span aria-hidden="true">*</span></legend>
+        <div class="field__choices" data-required-group data-error="Please choose how you would like us to contact you.">
+          {%- assign channels = 'WhatsApp,LINE,Instagram,Telegram' | split: ',' -%}
+          {%- for channel in channels -%}
+            <label class="choice">
+              <input type="radio" name="contact[Preferred contact]" value="{{ channel }}" required>
+              <span>{{ channel }}</span>
+            </label>
+          {%- endfor -%}
+        </div>
+        <p class="field__error" hidden></p>
+      </fieldset>
+
+      <div class="field">
+        <label for="Wholesale-contact-id">Contact ID / phone number <span aria-hidden="true">*</span></label>
+        <input
+          type="text"
+          id="Wholesale-contact-id"
+          name="contact[Contact ID]"
+          required
+          minlength="3"
+          maxlength="100"
+          placeholder="WhatsApp number (+country code), LINE ID, @instagram or @telegram"
+          data-error="Please enter your ID or number for the selected channel."
+        >
+        <p class="field__error" hidden></p>
+      </div>
+
+      <div class="field">
+        <label for="Wholesale-message">Message</label>
+        <textarea id="Wholesale-message" name="contact[body]" rows="5" maxlength="2000">{{ form.body }}</textarea>
+      </div>
+
+      <button type="submit" class="button button--full">{{ section.settings.button_label | default: 'Send inquiry' | escape }}</button>
+      <p class="field__hint">* Required fields</p>
+    {%- endform -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Wholesale inquiry form",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Leave empty to use the page title."
+    },
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "Intro text",
+      "info": "Shown only when the page content is empty."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "Send inquiry",
+      "label": "Button label"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "default": "Thank you! Your wholesale inquiry has been sent. We will contact you soon.",
+      "label": "Success message"
+    },
+    {
+      "type": "paragraph",
+      "content": "Submissions are emailed to the store contact email (Settings > Store details / Notifications)."
+    }
+  ]
+}
+{% endschema %}

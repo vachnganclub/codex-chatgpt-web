@@ -1,0 +1,90 @@
+{%- comment -%}
+  S11 — Customer feedback page /pages/feedback.
+  Buyers can NOT submit reviews here. Admins add/edit/remove feedback entries
+  as blocks in the Theme Editor (Online Store > Themes > Customize > Pages > feedback).
+  Each block: name, country, quote, optional photo of the received product.
+{%- endcomment -%}
+<section class="section feedback">
+  <div class="page-width">
+    <header class="feedback__header page-width--narrow">
+      <h1 class="page__title">{{ section.settings.heading | default: page.title | escape }}</h1>
+      {%- if page.content != blank -%}
+        <div class="rte">{{ page.content }}</div>
+      {%- elsif section.settings.intro != blank -%}
+        <div class="rte">{{ section.settings.intro }}</div>
+      {%- endif -%}
+    </header>
+
+    {%- if section.blocks.size > 0 -%}
+      <ul class="feedback__grid" role="list">
+        {%- for block in section.blocks -%}
+          <li class="feedback-card" {{ block.shopify_attributes }}>
+            {%- if block.settings.image != blank -%}
+              <div class="feedback-card__media">
+                {%- assign fb_alt = block.settings.image.alt | default: block.settings.name -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 800
+                  | image_tag: loading: 'lazy', widths: '300, 500, 800', sizes: '(min-width: 990px) 33vw, 100vw', alt: fb_alt
+                }}
+              </div>
+            {%- endif -%}
+            <figure class="feedback-card__body">
+              <blockquote class="feedback-card__quote rte">{{ block.settings.quote }}</blockquote>
+              <figcaption class="feedback-card__author">
+                <strong>{{ block.settings.name | escape }}</strong>
+                {%- if block.settings.country != blank -%}
+                  <span class="feedback-card__country">{{ block.settings.country | escape }}</span>
+                {%- endif -%}
+              </figcaption>
+            </figure>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- elsif request.design_mode -%}
+      <p class="editor-note">{{ 'sections.feedback.editor_empty' | t }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Customer feedback",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Leave empty to use the page title."
+    },
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "Intro text",
+      "info": "Shown only when the page content is empty."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feedback",
+      "name": "Feedback",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Customer name" },
+        { "type": "text", "id": "country", "label": "Country" },
+        { "type": "richtext", "id": "quote", "label": "Feedback text" },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Photo of received product (optional)",
+          "info": "Square 1:1, at least 800 x 800 px, JPG/WEBP under 300 KB. Images are cropped to a square without stretching."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Customer feedback"
+    }
+  ]
+}
+{% endschema %}

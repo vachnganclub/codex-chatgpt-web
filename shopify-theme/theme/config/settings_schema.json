@@ -1,0 +1,98 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "TCG Vault",
+    "theme_version": "1.0.0",
+    "theme_author": "Pokemoncard project",
+    "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
+    "theme_support_url": "https://help.shopify.com/"
+  },
+  {
+    "name": "t:settings_schema.logo.name",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "t:settings_schema.logo.settings.logo.label"
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "min": 60,
+        "max": 300,
+        "step": 10,
+        "unit": "px",
+        "default": 140,
+        "label": "t:settings_schema.logo.settings.logo_width.label"
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "t:settings_schema.logo.settings.favicon.label"
+      }
+    ]
+  },
+  {
+    "name": "t:settings_schema.colors.name",
+    "settings": [
+      { "type": "color", "id": "color_background", "default": "#ffffff", "label": "t:settings_schema.colors.settings.background.label" },
+      { "type": "color", "id": "color_surface", "default": "#f5f6fa", "label": "t:settings_schema.colors.settings.surface.label" },
+      { "type": "color", "id": "color_text", "default": "#14161f", "label": "t:settings_schema.colors.settings.text.label" },
+      { "type": "color", "id": "color_primary", "default": "#1d3fbb", "label": "t:settings_schema.colors.settings.primary.label" },
+      { "type": "color", "id": "color_primary_contrast", "default": "#ffffff", "label": "t:settings_schema.colors.settings.primary_contrast.label" },
+      { "type": "color", "id": "color_accent", "default": "#ffcb05", "label": "t:settings_schema.colors.settings.accent.label" },
+      { "type": "color", "id": "color_pokemon", "default": "#e3350d", "label": "t:settings_schema.colors.settings.pokemon.label" },
+      { "type": "color", "id": "color_onepiece", "default": "#0b4f8a", "label": "t:settings_schema.colors.settings.onepiece.label" },
+      { "type": "color", "id": "color_sale", "default": "#c2185b", "label": "t:settings_schema.colors.settings.sale.label" }
+    ]
+  },
+  {
+    "name": "t:settings_schema.typography.name",
+    "settings": [
+      { "type": "font_picker", "id": "type_heading_font", "default": "assistant_n7", "label": "t:settings_schema.typography.settings.heading.label" },
+      { "type": "font_picker", "id": "type_body_font", "default": "assistant_n4", "label": "t:settings_schema.typography.settings.body.label" }
+    ]
+  },
+  {
+    "name": "t:settings_schema.layout.name",
+    "settings": [
+      { "type": "range", "id": "page_width", "min": 1000, "max": 1600, "step": 100, "unit": "px", "default": 1300, "label": "t:settings_schema.layout.settings.page_width.label" },
+      { "type": "range", "id": "corner_radius", "min": 0, "max": 20, "step": 2, "unit": "px", "default": 10, "label": "t:settings_schema.layout.settings.corner_radius.label" }
+    ]
+  },
+  {
+    "name": "t:settings_schema.tcg.name",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "t:settings_schema.tcg.settings.paragraph.content"
+      },
+      { "type": "text", "id": "purchase_option_name", "default": "Purchase type", "label": "t:settings_schema.tcg.settings.purchase_option_name.label", "info": "t:settings_schema.tcg.settings.purchase_option_name.info" },
+      { "type": "text", "id": "rarity_tag_prefix", "default": "rarity:", "label": "t:settings_schema.tcg.settings.rarity_tag_prefix.label", "info": "t:settings_schema.tcg.settings.rarity_tag_prefix.info" },
+      { "type": "text", "id": "unit_tag_prefix", "default": "unit:", "label": "t:settings_schema.tcg.settings.unit_tag_prefix.label", "info": "t:settings_schema.tcg.settings.unit_tag_prefix.info" },
+      { "type": "checkbox", "id": "show_currency_code", "default": true, "label": "t:settings_schema.tcg.settings.show_currency_code.label" },
+      { "type": "range", "id": "low_stock_threshold", "min": 1, "max": 20, "step": 1, "default": 5, "label": "t:settings_schema.tcg.settings.low_stock_threshold.label" }
+    ]
+  },
+  {
+    "name": "t:settings_schema.cart.name",
+    "settings": [
+      { "type": "checkbox", "id": "show_cart_note", "default": true, "label": "t:settings_schema.cart.settings.show_cart_note.label" }
+    ]
+  },
+  {
+    "name": "t:settings_schema.contact.name",
+    "settings": [
+      { "type": "paragraph", "content": "t:settings_schema.contact.settings.paragraph.content" },
+      { "type": "text", "id": "contact_email", "label": "t:settings_schema.contact.settings.contact_email.label", "info": "t:settings_schema.contact.settings.contact_email.info" },
+      { "type": "url", "id": "social_instagram", "label": "Instagram" },
+      { "type": "url", "id": "social_facebook", "label": "Facebook" },
+      { "type": "url", "id": "social_tiktok", "label": "TikTok" },
+      { "type": "url", "id": "social_x", "label": "X (Twitter)" },
+      { "type": "url", "id": "social_youtube", "label": "YouTube" },
+      { "type": "url", "id": "contact_whatsapp", "label": "WhatsApp", "info": "t:settings_schema.contact.settings.whatsapp.info" },
+      { "type": "url", "id": "contact_line", "label": "LINE" },
+      { "type": "url", "id": "contact_telegram", "label": "Telegram" }
+    ]
+  }
+]

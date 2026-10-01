@@ -1,0 +1,176 @@
+{%- comment -%}
+  S07 — Cart /cart. Single cards and bulk packs live in the same cart (each is a variant).
+  Quantities update the cart and totals are recalculated by Shopify in the buyer's
+  current market currency, so the amounts match the Checkout.
+{%- endcomment -%}
+<section class="section cart-page">
+  <div class="page-width">
+    <div class="section__header">
+      <h1 class="section__heading">{{ 'templates.cart.title' | t }}</h1>
+      <a href="{{ routes.all_products_collection_url }}" class="link-arrow">{{ 'templates.cart.continue_shopping' | t }} &rarr;</a>
+    </div>
+
+    {%- if cart.item_count == 0 -%}
+      <div class="empty-state">
+        <p>{{ 'templates.cart.empty' | t }}</p>
+        <a href="{{ routes.all_products_collection_url }}" class="button">{{ 'templates.cart.continue_shopping' | t }}</a>
+      </div>
+    {%- else -%}
+      <form action="{{ routes.cart_url }}" method="post" id="CartForm" class="cart" novalidate data-cart-form>
+        <table class="cart__table">
+          <thead>
+            <tr>
+              <th scope="col">{{ 'templates.cart.product' | t }}</th>
+              <th scope="col" class="cart__col-price">{{ 'templates.cart.price' | t }}</th>
+              <th scope="col">{{ 'templates.cart.quantity' | t }}</th>
+              <th scope="col" class="cart__col-total">{{ 'templates.cart.total' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {%- for item in cart.items -%}
+              {%- liquid
+                assign option_name = settings.purchase_option_name | downcase | strip
+                assign unit = ''
+                for option in item.options_with_values
+                  assign this_name = option.name | downcase | strip
+                  if this_name == option_name
+                    assign unit = option.value | downcase
+                  endif
+                endfor
+                if unit == blank
+                  capture unit
+                    render 'product-meta', product: item.product, output: 'units'
+                  endcapture
+                  assign unit = unit | strip
+                  if unit contains '·'
+                    assign unit = ''
+                  endif
+                endif
+                assign max_qty = ''
+                if item.variant.inventory_management == 'shopify' and item.variant.inventory_policy == 'deny'
+                  assign max_qty = item.variant.inventory_quantity
+                endif
+              -%}
+              <tr class="cart-item">
+                <td class="cart-item__product">
+                  <a href="{{ item.url }}" class="cart-item__media">
+                    {%- if item.image -%}
+                      {%- assign item_alt = item.image.alt | default: item.product.title -%}
+                      {{ item.image | image_url: width: 240 | image_tag: loading: 'lazy', alt: item_alt }}
+                    {%- else -%}
+                      {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                    {%- endif -%}
+                  </a>
+                  <div class="cart-item__details">
+                    <a href="{{ item.url }}" class="cart-item__title">{{ item.product.title | escape }}</a>
+                    {%- unless item.product.has_only_default_variant -%}
+                      <ul class="cart-item__options" role="list">
+                        {%- for option in item.options_with_values -%}
+                          <li>{{ option.name | escape }}: <strong>{{ option.value | escape }}</strong></li>
+                        {%- endfor -%}
+                      </ul>
+                    {%- endunless -%}
+                    {%- if unit != blank -%}
+                      <span class="unit-pill unit-pill--{{ unit | handle }}">{{ unit }}</span>
+                    {%- endif -%}
+                    {%- for property in item.properties -%}
+                      {%- assign first_char = property.first | slice: 0 -%}
+                      {%- if property.last != blank and first_char != '_' -%}
+                        <p class="cart-item__property">{{ property.first | escape }}: {{ property.last | escape }}</p>
+                      {%- endif -%}
+                    {%- endfor -%}
+                    <p class="cart-item__unit-price-mobile">
+                      {{ item.final_price | money }}{% if unit != blank %} / {{ unit }}{% endif %}
+                    </p>
+                    {%- for discount in item.line_level_discount_allocations -%}
+                      <p class="cart-item__discount">{{ discount.discount_application.title | escape }} (-{{ discount.amount | money }})</p>
+                    {%- endfor -%}
+                    <a href="{{ item.url_to_remove }}" class="cart-item__remove" data-cart-remove>{{ 'templates.cart.remove' | t }}</a>
+                  </div>
+                </td>
+                <td class="cart__col-price">
+                  {%- if item.original_price != item.final_price -%}
+                    <s>{{ item.original_price | money }}</s>
+                  {%- endif -%}
+                  {{ item.final_price | money }}{% if unit != blank %} <span class="price__unit">/ {{ unit }}</span>{% endif %}
+                </td>
+                <td>
+                  <div class="quantity quantity--small">
+                    <label class="visually-hidden" for="Quantity-{{ forloop.index }}">{{ 'templates.cart.quantity' | t }} — {{ item.product.title | escape }}</label>
+                    <button type="button" class="quantity__button" data-qty-minus aria-label="{{ 'products.product.quantity_decrease' | t }}">&minus;</button>
+                    <input
+                      class="quantity__input"
+                      type="number"
+                      id="Quantity-{{ forloop.index }}"
+                      name="updates[]"
+                      value="{{ item.quantity }}"
+                      min="0"
+                      {% if max_qty != blank %}
+                        max="{{ max_qty }}"
+                      {% endif %}
+                      inputmode="numeric"
+                      data-qty-input
+                      data-cart-qty
+                    >
+                    <button type="button" class="quantity__button" data-qty-plus aria-label="{{ 'products.product.quantity_increase' | t }}">+</button>
+                  </div>
+                </td>
+                <td class="cart__col-total">
+                  {%- if item.original_line_price != item.final_line_price -%}
+                    <s>{{ item.original_line_price | money }}</s>
+                  {%- endif -%}
+                  <strong>{{ item.final_line_price | money }}</strong>
+                </td>
+              </tr>
+            {%- endfor -%}
+          </tbody>
+        </table>
+
+        <div class="cart__footer">
+          {%- if settings.show_cart_note -%}
+            <div class="cart__note">
+              <label for="CartNote">{{ 'templates.cart.note' | t }}</label>
+              <textarea id="CartNote" name="note" rows="4" placeholder="{{ 'templates.cart.note_placeholder' | t }}">{{ cart.note }}</textarea>
+            </div>
+          {%- endif -%}
+
+          <div class="cart__summary">
+            {%- if cart.cart_level_discount_applications.size > 0 -%}
+              <ul class="cart__discounts" role="list">
+                {%- for discount in cart.cart_level_discount_applications -%}
+                  <li>{{ discount.title | escape }}: -{{ discount.total_allocated_amount | money }}</li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+            <p class="cart__total">
+              <span>{{ 'templates.cart.subtotal' | t }}</span>
+              <strong data-cart-total>{{ cart.total_price | money_with_currency }}</strong>
+            </p>
+            <p class="cart__taxes">{{ 'templates.cart.taxes_and_shipping' | t }}</p>
+            <noscript>
+              <button type="submit" class="button button--secondary button--full" name="update">{{ 'templates.cart.update' | t }}</button>
+            </noscript>
+            <button type="submit" class="button button--full" name="checkout">{{ 'templates.cart.checkout' | t }}</button>
+            {%- if additional_checkout_buttons and section.settings.show_additional_checkout -%}
+              <div class="cart__dynamic-checkout">{{ content_for_additional_checkout_buttons }}</div>
+            {%- endif -%}
+          </div>
+        </div>
+      </form>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Cart",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_additional_checkout",
+      "default": true,
+      "label": "Show express checkout buttons"
+    }
+  ]
+}
+{% endschema %}

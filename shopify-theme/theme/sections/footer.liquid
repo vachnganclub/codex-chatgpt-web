@@ -1,0 +1,206 @@
+{%- comment -%}
+  S09 — Footer shown on every page: logo, contact email, policy links
+  (Privacy Policy & Cookie Policy), Wholesale Inquiry, Feedback, contact channels,
+  and the country / currency selector.
+{%- endcomment -%}
+{%- liquid
+  assign contact_email = settings.contact_email | default: shop.email
+
+  assign wholesale_page = section.settings.wholesale_page
+  if wholesale_page == blank
+    assign wholesale_page = pages['wholesale-inquiry']
+  endif
+  assign feedback_page = section.settings.feedback_page
+  if feedback_page == blank
+    assign feedback_page = pages['feedback']
+  endif
+  assign privacy_page = section.settings.privacy_page
+  if privacy_page == blank
+    assign privacy_page = pages['privacy-policy']
+  endif
+-%}
+<footer class="site-footer">
+  <div class="page-width site-footer__grid">
+    <div class="site-footer__brand">
+      <a href="{{ routes.root_url }}" class="site-footer__logo">
+        {%- if settings.logo != blank -%}
+          {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio | round -%}
+          {{
+            settings.logo
+            | image_url: width: 600
+            | image_tag:
+              loading: 'lazy',
+              widths: '150, 300, 600',
+              height: logo_height,
+              width: settings.logo_width,
+              alt: shop.name
+          }}
+        {%- else -%}
+          <span class="site-header__shop-name">{{ shop.name }}</span>
+        {%- endif -%}
+      </a>
+      {%- if section.settings.about != blank -%}
+        <div class="rte site-footer__about">{{ section.settings.about }}</div>
+      {%- endif -%}
+      {%- if contact_email != blank -%}
+        <p class="site-footer__contact">
+          {% render 'icon', name: 'mail' %}
+          <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>
+        </p>
+      {%- endif -%}
+    </div>
+
+    <div class="site-footer__column">
+      <h2 class="site-footer__heading">{{ section.settings.shop_heading | escape }}</h2>
+      <ul class="site-footer__links" role="list">
+        {%- for link in section.settings.menu.links -%}
+          <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+        {%- endfor -%}
+      </ul>
+    </div>
+
+    <div class="site-footer__column">
+      <h2 class="site-footer__heading">{{ section.settings.info_heading | escape }}</h2>
+      <ul class="site-footer__links" role="list">
+        {%- if wholesale_page != blank -%}
+          <li><a href="{{ wholesale_page.url }}">{{ 'sections.footer.wholesale' | t }}</a></li>
+        {%- endif -%}
+        {%- if feedback_page != blank -%}
+          <li><a href="{{ feedback_page.url }}">{{ 'sections.footer.feedback' | t }}</a></li>
+        {%- endif -%}
+        {%- if privacy_page != blank -%}
+          <li><a href="{{ privacy_page.url }}#privacy-policy">{{ 'sections.footer.privacy' | t }}</a></li>
+          <li><a href="{{ privacy_page.url }}#cookie-policy">{{ 'sections.footer.cookie' | t }}</a></li>
+        {%- endif -%}
+        {%- for link in section.settings.info_menu.links -%}
+          <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+        {%- endfor -%}
+      </ul>
+      {%- if request.design_mode -%}
+        {%- if wholesale_page == blank or feedback_page == blank or privacy_page == blank -%}
+          <p class="editor-note">{{ 'sections.footer.editor_pages_hint' | t }}</p>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+
+    <div class="site-footer__column">
+      <h2 class="site-footer__heading">{{ section.settings.contact_heading | escape }}</h2>
+      <ul class="site-footer__links site-footer__channels" role="list">
+        {%- if settings.contact_whatsapp != blank -%}<li><a href="{{ settings.contact_whatsapp }}" target="_blank" rel="noopener">WhatsApp</a></li>{%- endif -%}
+        {%- if settings.contact_line != blank -%}<li><a href="{{ settings.contact_line }}" target="_blank" rel="noopener">LINE</a></li>{%- endif -%}
+        {%- if settings.contact_telegram != blank -%}<li><a href="{{ settings.contact_telegram }}" target="_blank" rel="noopener">Telegram</a></li>{%- endif -%}
+        {%- if settings.social_instagram != blank -%}<li><a href="{{ settings.social_instagram }}" target="_blank" rel="noopener">Instagram</a></li>{%- endif -%}
+        {%- if settings.social_facebook != blank -%}<li><a href="{{ settings.social_facebook }}" target="_blank" rel="noopener">Facebook</a></li>{%- endif -%}
+        {%- if settings.social_tiktok != blank -%}<li><a href="{{ settings.social_tiktok }}" target="_blank" rel="noopener">TikTok</a></li>{%- endif -%}
+        {%- if settings.social_x != blank -%}<li><a href="{{ settings.social_x }}" target="_blank" rel="noopener">X</a></li>{%- endif -%}
+        {%- if settings.social_youtube != blank -%}<li><a href="{{ settings.social_youtube }}" target="_blank" rel="noopener">YouTube</a></li>{%- endif -%}
+      </ul>
+      {%- if request.design_mode -%}
+        <p class="editor-note">{{ 'sections.footer.editor_social_hint' | t }}</p>
+      {%- endif -%}
+      <div class="site-footer__localization">
+        {% render 'localization-form', id_suffix: 'footer' %}
+      </div>
+    </div>
+  </div>
+
+  <div class="page-width site-footer__bottom">
+    <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name | link_to: routes.root_url }}. {{ powered_by_link }}</p>
+    {%- if section.settings.show_payment_icons -%}
+      <ul class="payment-icons" role="list">
+        {%- for type in shop.enabled_payment_types -%}
+          <li>{{ type | payment_type_svg_tag: class: 'payment-icon' }}</li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "class": "section-footer",
+  "enabled_on": {
+    "groups": ["footer"]
+  },
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "about",
+      "label": "Short text under the logo",
+      "info": "[TO PROVIDE] Store description supplied by the owner."
+    },
+    {
+      "type": "header",
+      "content": "Shop column"
+    },
+    {
+      "type": "text",
+      "id": "shop_heading",
+      "default": "Shop",
+      "label": "Heading"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "default": "main-menu",
+      "label": "Menu"
+    },
+    {
+      "type": "header",
+      "content": "Information column"
+    },
+    {
+      "type": "text",
+      "id": "info_heading",
+      "default": "Information",
+      "label": "Heading"
+    },
+    {
+      "type": "page",
+      "id": "wholesale_page",
+      "label": "Wholesale Inquiry page",
+      "info": "Select the page with handle wholesale-inquiry."
+    },
+    {
+      "type": "page",
+      "id": "feedback_page",
+      "label": "Feedback page",
+      "info": "Select the page with handle feedback."
+    },
+    {
+      "type": "page",
+      "id": "privacy_page",
+      "label": "Privacy & Cookie Policy page",
+      "info": "Select the page with handle privacy-policy. Two links are created: Privacy Policy and Cookie Policy."
+    },
+    {
+      "type": "link_list",
+      "id": "info_menu",
+      "default": "footer",
+      "label": "Extra links menu",
+      "info": "Optional, e.g. Shopify policies (Refund, Shipping, Terms)."
+    },
+    {
+      "type": "header",
+      "content": "Contact column"
+    },
+    {
+      "type": "text",
+      "id": "contact_heading",
+      "default": "Contact us",
+      "label": "Heading"
+    },
+    {
+      "type": "paragraph",
+      "content": "Contact email and channel links are set in Theme settings > Contact & social."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "default": true,
+      "label": "Show payment icons"
+    }
+  ]
+}
+{% endschema %}

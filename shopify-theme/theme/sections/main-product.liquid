@@ -1,0 +1,306 @@
+{%- comment -%}
+  S06 — Product page /products/<handle>.
+  Variant structure: option "Purchase type" (name configurable in Theme settings > TCG data)
+  with values "card" (single card) and "pack" (bulk pack). Each variant has its own price,
+  SKU, image and inventory. Changing the variant updates price, unit, image, stock and URL.
+{%- endcomment -%}
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign option_name = settings.purchase_option_name | downcase | strip
+  assign low_stock = settings.low_stock_threshold
+-%}
+{%- capture rarity -%}{%- render 'product-meta', product: product, output: 'rarity' -%}{%- endcapture -%}
+{%- capture line -%}{%- render 'product-meta', product: product, output: 'line' -%}{%- endcapture -%}
+{%- liquid
+  assign rarity = rarity | strip
+  assign line = line | strip
+
+  assign current_unit = ''
+  for option in product.options_with_values
+    assign this_name = option.name | downcase | strip
+    if this_name == option_name
+      assign current_unit = option.selected_value | downcase
+    endif
+  endfor
+  if current_unit == blank
+    capture current_unit
+      render 'product-meta', product: product, output: 'units'
+    endcapture
+    assign current_unit = current_unit | strip
+    if current_unit contains '·'
+      assign current_unit = ''
+    endif
+  endif
+-%}
+
+<section class="section product{% if line != blank %} product--{{ line }}{% endif %}" data-product-section data-section-id="{{ section.id }}">
+  <div class="page-width product__grid">
+    <div class="product__media">
+      {%- assign featured = current_variant.featured_media | default: product.featured_media -%}
+      <div class="product__main-media" data-main-media>
+        {%- if featured -%}
+          {%- assign featured_alt = featured.alt | default: product.title -%}
+          {{
+            featured
+            | image_url: width: 1200
+            | image_tag:
+              widths: '400, 600, 800, 1000, 1200',
+              sizes: '(min-width: 990px) 50vw, 100vw',
+              fetchpriority: 'high',
+              alt: featured_alt
+          }}
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- endif -%}
+      </div>
+      {%- if product.media.size > 1 -%}
+        <ul class="product__thumbs" role="list">
+          {%- for media in product.media -%}
+            {%- if media.media_type == 'image' -%}
+              <li>
+                <button
+                  type="button"
+                  class="product__thumb{% if media.id == featured.id %} is-active{% endif %}"
+                  data-thumb
+                  data-media-id="{{ media.id }}"
+                  data-src="{{ media | image_url: width: 1200 }}"
+                  data-srcset="{{ media | image_url: width: 600 }} 600w, {{ media | image_url: width: 1200 }} 1200w"
+                  data-alt="{{ media.alt | default: product.title | escape }}"
+                  aria-label="{{ 'products.product.view_image' | t: number: forloop.index }}"
+                >
+                  {{ media | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}
+                </button>
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+
+    <div class="product__info">
+      <div class="product__labels">
+        {%- if line == 'pokemon' -%}
+          <span class="badge badge--pokemon">Pokémon</span>
+        {%- elsif line == 'one-piece' -%}
+          <span class="badge badge--onepiece">One Piece</span>
+        {%- endif -%}
+        {%- if rarity != blank -%}
+          <span class="badge badge--rarity">{{ 'products.product.rarity' | t }}: {{ rarity }}</span>
+        {%- endif -%}
+      </div>
+
+      <h1 class="product__title">{{ product.title | escape }}</h1>
+
+      {%- if section.settings.show_vendor and product.vendor != blank -%}
+        <p class="product__vendor">{{ product.vendor | escape }}</p>
+      {%- endif -%}
+
+      <div class="product__price" data-price-wrapper>
+        {% render 'price', product: product, variant: current_variant, unit: current_unit %}
+      </div>
+      <p class="product__tax-note">{{ 'products.product.taxes_note' | t }}</p>
+
+      {%- form 'product', product, id: 'ProductForm', class: 'product-form', novalidate: 'novalidate', data-product-form: '' -%}
+        <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
+
+        {%- unless product.has_only_default_variant -%}
+          {%- for option in product.options_with_values -%}
+            {%- assign this_name = option.name | downcase | strip -%}
+            <fieldset class="variant-picker{% if this_name == option_name %} variant-picker--purchase-type{% endif %}">
+              <legend class="variant-picker__legend">{{ option.name | escape }}</legend>
+              <div class="variant-picker__options">
+                {%- for value in option.values -%}
+                  <input
+                    type="radio"
+                    class="variant-picker__input"
+                    id="Option-{{ section.id }}-{{ forloop.parentloop.index0 }}-{{ forloop.index0 }}"
+                    name="option-{{ forloop.parentloop.index0 }}"
+                    value="{{ value | escape }}"
+                    data-option-index="{{ forloop.parentloop.index0 }}"
+                    {% if option.selected_value == value %}
+                      checked
+                    {% endif %}
+                  >
+                  <label class="variant-picker__label" for="Option-{{ section.id }}-{{ forloop.parentloop.index0 }}-{{ forloop.index0 }}">
+                    {{- value | escape -}}
+                  </label>
+                {%- endfor -%}
+              </div>
+            </fieldset>
+          {%- endfor -%}
+        {%- endunless -%}
+
+        {%- if product.metafields.custom.pack_contents != blank -%}
+          <p class="product__pack-note">{{ product.metafields.custom.pack_contents | metafield_tag }}</p>
+        {%- endif -%}
+
+        <p class="product__stock" data-stock aria-live="polite">
+          {%- if current_variant.available == false -%}
+            <span class="stock stock--out">{{ 'products.product.sold_out' | t }}</span>
+          {%- elsif current_variant.inventory_management == 'shopify' and current_variant.inventory_policy == 'deny' and current_variant.inventory_quantity <= low_stock -%}
+            <span class="stock stock--low">{{ 'products.product.low_stock' | t: count: current_variant.inventory_quantity }}</span>
+          {%- else -%}
+            <span class="stock stock--in">{{ 'products.product.in_stock' | t }}</span>
+          {%- endif -%}
+        </p>
+
+        <div class="product-form__row">
+          <div class="quantity">
+            <label class="visually-hidden" for="Quantity-{{ section.id }}">{{ 'products.product.quantity' | t }}</label>
+            <button type="button" class="quantity__button" data-qty-minus aria-label="{{ 'products.product.quantity_decrease' | t }}">&minus;</button>
+            <input
+              class="quantity__input"
+              type="number"
+              id="Quantity-{{ section.id }}"
+              name="quantity"
+              value="1"
+              min="1"
+              inputmode="numeric"
+              {% if current_variant.inventory_management == 'shopify' and current_variant.inventory_policy == 'deny' and current_variant.inventory_quantity > 0 %}
+                max="{{ current_variant.inventory_quantity }}"
+              {% endif %}
+              data-qty-input
+            >
+            <button type="button" class="quantity__button" data-qty-plus aria-label="{{ 'products.product.quantity_increase' | t }}">+</button>
+          </div>
+          <button
+            type="submit"
+            name="add"
+            class="button button--full product-form__submit"
+            data-add-to-cart
+            {% if current_variant.available == false %}
+              disabled
+            {% endif %}
+          >
+            {%- if current_variant.available -%}
+              {{ 'products.product.add_to_cart' | t }}
+            {%- else -%}
+              {{ 'products.product.sold_out' | t }}
+            {%- endif -%}
+          </button>
+        </div>
+        <p class="form-message form-message--error" data-form-error hidden></p>
+        {%- if section.settings.show_dynamic_checkout -%}
+          <div class="product__dynamic-checkout">{{ form | payment_button }}</div>
+        {%- endif -%}
+      {%- endform -%}
+
+
+      {%- if product.description != blank -%}
+        <div class="product__description rte">
+          <h2 class="product__subheading">{{ 'products.product.description' | t }}</h2>
+          {{ product.description }}
+        </div>
+      {%- endif -%}
+
+      <dl class="product__specs">
+        {%- if current_unit != blank -%}
+          <div><dt>{{ 'products.product.unit' | t }}</dt><dd data-spec-unit>{{ current_unit }}</dd></div>
+        {%- endif -%}
+        {%- if rarity != blank -%}
+          <div><dt>{{ 'products.product.rarity' | t }}</dt><dd>{{ rarity }}</dd></div>
+        {%- endif -%}
+        {%- if product.metafields.custom.set_name != blank -%}
+          <div><dt>{{ 'products.product.set' | t }}</dt><dd>{{ product.metafields.custom.set_name.value }}</dd></div>
+        {%- endif -%}
+        {%- if product.metafields.custom.card_number != blank -%}
+          <div><dt>{{ 'products.product.card_number' | t }}</dt><dd>{{ product.metafields.custom.card_number.value }}</dd></div>
+        {%- endif -%}
+        {%- if product.metafields.custom.condition != blank -%}
+          <div><dt>{{ 'products.product.condition' | t }}</dt><dd>{{ product.metafields.custom.condition.value }}</dd></div>
+        {%- endif -%}
+        {%- if product.metafields.custom.language != blank -%}
+          <div><dt>{{ 'products.product.language' | t }}</dt><dd>{{ product.metafields.custom.language.value }}</dd></div>
+        {%- endif -%}
+        <div><dt>SKU</dt><dd data-spec-sku>{{ current_variant.sku | default: '—' }}</dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <script type="application/json" data-product-json>
+    {
+      "optionName": {{ settings.purchase_option_name | downcase | strip | json }},
+      "lowStock": {{ low_stock | json }},
+      "options": {{ product.options | json }},
+      "variants": [
+        {%- for variant in product.variants -%}
+          {%- liquid
+            if settings.show_currency_code
+              assign v_price = variant.price | money_with_currency
+              assign v_compare = variant.compare_at_price | money_with_currency
+            else
+              assign v_price = variant.price | money
+              assign v_compare = variant.compare_at_price | money
+            endif
+            assign v_tracked = false
+            if variant.inventory_management == 'shopify' and variant.inventory_policy == 'deny'
+              assign v_tracked = true
+            endif
+          -%}
+          {
+            "id": {{ variant.id }},
+            "options": {{ variant.options | json }},
+            "available": {{ variant.available | json }},
+            "price": {{ v_price | json }},
+            "compareAtPrice": {% if variant.compare_at_price > variant.price %}{{ v_compare | json }}{% else %}null{% endif %},
+            "sku": {{ variant.sku | json }},
+            "tracked": {{ v_tracked | json }},
+            "inventory": {{ variant.inventory_quantity | json }},
+            "mediaId": {% if variant.featured_media %}{{ variant.featured_media.id }}{% else %}null{% endif %}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+</section>
+
+{%- liquid
+  if product.selected_or_first_available_variant.featured_media
+    assign seo_media = product.selected_or_first_available_variant.featured_media
+  else
+    assign seo_media = product.featured_media
+  endif
+-%}
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org/",
+    "@type": "Product",
+    "name": {{ product.title | json }},
+    "url": {{ request.origin | append: product.url | json }},
+    {% if seo_media -%}
+      "image": [{{ seo_media | image_url: width: 1200 | prepend: "https:" | json }}],
+    {%- endif %}
+    "description": {{ product.description | strip_html | json }},
+    {% if current_variant.sku != blank -%}
+      "sku": {{ current_variant.sku | json }},
+    {%- endif %}
+    "brand": { "@type": "Brand", "name": {{ product.vendor | json }} },
+    "offers": [
+      {%- for variant in product.variants -%}
+        {
+          "@type": "Offer",
+          {%- if variant.sku != blank %}"sku": {{ variant.sku | json }},{% endif %}
+          "availability": "http://schema.org/{% if variant.available %}InStock{% else %}OutOfStock{% endif %}",
+          "price": {{ variant.price | divided_by: 100.00 | json }},
+          "priceCurrency": {{ cart.currency.iso_code | json }},
+          "url": {{ request.origin | append: variant.url | json }}
+        }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Product information",
+  "tag": "div",
+  "settings": [
+    { "type": "checkbox", "id": "show_vendor", "default": false, "label": "Show vendor" },
+    { "type": "checkbox", "id": "show_dynamic_checkout", "default": true, "label": "Show dynamic checkout buttons", "info": "Express buttons such as Shop Pay / Apple Pay from Shopify Payments." },
+    {
+      "type": "paragraph",
+      "content": "Optional product metafields (namespace custom): rarity, set_name, card_number, condition, language, pack_contents."
+    }
+  ]
+}
+{% endschema %}

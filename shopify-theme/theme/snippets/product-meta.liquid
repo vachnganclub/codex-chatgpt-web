@@ -1,0 +1,73 @@
+{%- comment -%}
+  Works out the TCG-specific data of a product without any app:
+  - units: the purchase-type values ("card", "pack") from the variant option named in
+    Theme settings > TCG data > Purchase option name, or from tags like "unit:card".
+  - rarity: from metafield custom.rarity, or tags like "rarity:secret-rare".
+  - line: "pokemon" / "one-piece" from tags or the product type.
+  Accepts:
+  - product: {Object}
+  - output: {String} 'units' | 'rarity' | 'line'
+{%- endcomment -%}
+{%- liquid
+  assign option_name = settings.purchase_option_name | downcase | strip
+  assign unit_prefix = settings.unit_tag_prefix | downcase
+  assign rarity_prefix = settings.rarity_tag_prefix | downcase
+
+  case output
+    when 'units'
+      assign units = ''
+      for option in product.options_with_values
+        assign this_name = option.name | downcase | strip
+        if this_name == option_name
+          assign units = option.values | join: ' · ' | downcase
+        endif
+      endfor
+      if units == blank
+        for tag in product.tags
+          assign t = tag | downcase
+          if t contains unit_prefix
+            assign value = t | remove_first: unit_prefix | strip
+            if units == blank
+              assign units = value
+            else
+              assign units = units | append: ' · ' | append: value
+            endif
+          endif
+        endfor
+      endif
+      echo units
+
+    when 'rarity'
+      assign rarity = product.metafields.custom.rarity.value
+      if rarity == blank
+        for tag in product.tags
+          assign t = tag | downcase
+          if t contains rarity_prefix
+            assign rarity = tag | remove_first: settings.rarity_tag_prefix | replace: '-', ' ' | strip | capitalize
+            break
+          endif
+        endfor
+      endif
+      echo rarity
+
+    when 'line'
+      assign line = ''
+      assign type = product.type | downcase | handle
+      for tag in product.tags
+        assign t = tag | handle
+        if t == 'pokemon' or t == 'game-pokemon'
+          assign line = 'pokemon'
+        elsif t == 'one-piece' or t == 'game-one-piece'
+          assign line = 'one-piece'
+        endif
+      endfor
+      if line == blank
+        if type contains 'pokemon'
+          assign line = 'pokemon'
+        elsif type contains 'one-piece'
+          assign line = 'one-piece'
+        endif
+      endif
+      echo line
+  endcase
+-%}

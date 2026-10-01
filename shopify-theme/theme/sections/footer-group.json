@@ -1,0 +1,18 @@
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "settings": {
+        "shop_heading": "Shop",
+        "menu": "main-menu",
+        "info_heading": "Information",
+        "info_menu": "footer",
+        "contact_heading": "Contact us",
+        "show_payment_icons": true
+      }
+    }
+  },
+  "order": ["footer"]
+}

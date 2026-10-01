@@ -1,0 +1,141 @@
+{%- comment -%}
+  S09 — Header shown on every page.
+  Menu (Online Store > Navigation > Main menu) should contain:
+  Home (/), Single cards (/collections/single-cards), Bulk packs (/collections/bulk-packs),
+  Pokémon (/collections/pokemon), One Piece (/collections/one-piece), Cart (/cart).
+  The country / currency selector sits on the right on desktop and inside the menu drawer on mobile.
+{%- endcomment -%}
+<header class="site-header{% if section.settings.sticky %} site-header--sticky{% endif %}" data-header>
+  <div class="page-width site-header__inner">
+    <details class="menu-drawer" data-menu-drawer>
+      <summary class="icon-button menu-drawer__toggle" aria-label="{{ 'sections.header.menu' | t }}">
+        <span class="menu-drawer__open">{% render 'icon', name: 'menu' %}</span>
+        <span class="menu-drawer__close">{% render 'icon', name: 'close' %}</span>
+      </summary>
+      <div class="menu-drawer__panel">
+        <nav aria-label="{{ 'sections.header.menu' | t }}">
+          <ul class="menu-drawer__list" role="list">
+            {%- for link in section.settings.menu.links -%}
+              <li>
+                {%- if link.links != blank -%}
+                  <details>
+                    <summary class="menu-drawer__link{% if link.child_active or link.active %} is-active{% endif %}">{{ link.title | escape }}</summary>
+                    <ul class="menu-drawer__sublist" role="list">
+                      {%- for childlink in link.links -%}
+                        <li>
+                          <a href="{{ childlink.url }}" class="menu-drawer__link"{% if childlink.current %} aria-current="page"{% endif %}>{{ childlink.title | escape }}</a>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  </details>
+                {%- else -%}
+                  <a href="{{ link.url }}" class="menu-drawer__link{% if link.active %} is-active{% endif %}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+        <div class="menu-drawer__localization">
+          <p class="menu-drawer__label">{{ 'localization.country_label' | t }}</p>
+          {% render 'localization-form', id_suffix: 'drawer' %}
+        </div>
+        {%- if shop.customer_accounts_enabled -%}
+          <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" class="menu-drawer__link">
+            {%- if customer -%}{{ 'customer.account.title' | t }}{%- else -%}{{ 'customer.log_in' | t }}{%- endif -%}
+          </a>
+        {%- endif -%}
+      </div>
+    </details>
+
+    {%- if request.page_type == 'index' -%}<h1 class="site-header__heading">{%- else -%}<div class="site-header__heading">{%- endif -%}
+      <a href="{{ routes.root_url }}" class="site-header__logo">
+        {%- if settings.logo != blank -%}
+          {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio | round -%}
+          {{
+            settings.logo
+            | image_url: width: 600
+            | image_tag:
+              class: 'site-header__logo-image',
+              widths: '150, 300, 600',
+              height: logo_height,
+              width: settings.logo_width,
+              alt: shop.name
+          }}
+        {%- else -%}
+          <span class="site-header__shop-name">{{ shop.name }}</span>
+        {%- endif -%}
+      </a>
+    {%- if request.page_type == 'index' -%}</h1>{%- else -%}</div>{%- endif -%}
+
+    <nav class="site-nav" aria-label="{{ 'sections.header.menu' | t }}">
+      <ul class="site-nav__list" role="list">
+        {%- for link in section.settings.menu.links -%}
+          <li class="site-nav__item">
+            {%- if link.links != blank -%}
+              <details class="site-nav__dropdown" data-dropdown>
+                <summary class="site-nav__link{% if link.child_active or link.active %} is-active{% endif %}">{{ link.title | escape }}</summary>
+                <ul class="site-nav__submenu" role="list">
+                  {%- for childlink in link.links -%}
+                    <li><a href="{{ childlink.url }}" class="site-nav__sublink"{% if childlink.current %} aria-current="page"{% endif %}>{{ childlink.title | escape }}</a></li>
+                  {%- endfor -%}
+                </ul>
+              </details>
+            {%- else -%}
+              <a href="{{ link.url }}" class="site-nav__link{% if link.active %} is-active{% endif %}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    <div class="site-header__icons">
+      <div class="site-header__localization">
+        {% render 'localization-form', id_suffix: 'header' %}
+      </div>
+      {%- if section.settings.show_search -%}
+        <a href="{{ routes.search_url }}" class="icon-button" aria-label="{{ 'general.search.search' | t }}">{% render 'icon', name: 'search' %}</a>
+      {%- endif -%}
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" class="icon-button site-header__account" aria-label="{{ 'customer.account.title' | t }}">{% render 'icon', name: 'account' %}</a>
+      {%- endif -%}
+      <a href="{{ routes.cart_url }}" class="icon-button site-header__cart" aria-label="{{ 'templates.cart.title' | t }}">
+        {% render 'icon', name: 'cart' %}
+        <span class="cart-count{% if cart.item_count == 0 %} cart-count--empty{% endif %}" data-cart-count>
+          <span aria-hidden="true">{{ cart.item_count }}</span>
+          <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
+        </span>
+      </a>
+    </div>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "section-header",
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "default": "main-menu",
+      "label": "Menu",
+      "info": "Recommended items: Home, Single cards, Bulk packs, Pokémon, One Piece, Cart."
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky",
+      "default": true,
+      "label": "Sticky header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "default": true,
+      "label": "Show search icon"
+    }
+  ]
+}
+{% endschema %}

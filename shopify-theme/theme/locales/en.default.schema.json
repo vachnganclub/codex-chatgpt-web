@@ -1,0 +1,77 @@
+{
+  "settings_schema": {
+    "logo": {
+      "name": "Logo & favicon",
+      "settings": {
+        "logo": { "label": "Logo" },
+        "logo_width": { "label": "Logo width" },
+        "favicon": { "label": "Favicon (32 x 32 px)" }
+      }
+    },
+    "colors": {
+      "name": "Colors",
+      "settings": {
+        "background": { "label": "Background" },
+        "surface": { "label": "Surface (cards, panels)" },
+        "text": { "label": "Text" },
+        "primary": { "label": "Primary (buttons, links)" },
+        "primary_contrast": { "label": "Text on primary" },
+        "accent": { "label": "Accent (rarity badge, highlights)" },
+        "pokemon": { "label": "Pokémon brand color" },
+        "onepiece": { "label": "One Piece brand color" },
+        "sale": { "label": "Sale / pack color" }
+      }
+    },
+    "typography": {
+      "name": "Typography",
+      "settings": {
+        "heading": { "label": "Heading font" },
+        "body": { "label": "Body font" }
+      }
+    },
+    "layout": {
+      "name": "Layout",
+      "settings": {
+        "page_width": { "label": "Page width" },
+        "corner_radius": { "label": "Corner radius" }
+      }
+    },
+    "tcg": {
+      "name": "TCG data",
+      "settings": {
+        "paragraph": { "content": "How the theme reads card data from your products. Recommended: one product per card / pack item, with a variant option named \"Purchase type\" whose values are \"card\" and \"pack\"." },
+        "purchase_option_name": {
+          "label": "Purchase option name",
+          "info": "Variant option that holds the selling unit (card / pack). Shown as the unit next to prices."
+        },
+        "rarity_tag_prefix": {
+          "label": "Rarity tag prefix",
+          "info": "e.g. tag rarity:secret-rare shows \"Secret rare\". The metafield custom.rarity takes priority."
+        },
+        "unit_tag_prefix": {
+          "label": "Unit tag prefix",
+          "info": "Fallback for products without the purchase option, e.g. tag unit:pack."
+        },
+        "show_currency_code": { "label": "Show currency code with prices (e.g. USD, EUR, SGD)" },
+        "low_stock_threshold": { "label": "Show \"Only X left\" at or below" }
+      }
+    },
+    "cart": {
+      "name": "Cart",
+      "settings": {
+        "show_cart_note": { "label": "Show order note" }
+      }
+    },
+    "contact": {
+      "name": "Contact & social",
+      "settings": {
+        "paragraph": { "content": "Leave a field empty to hide that channel in the footer." },
+        "contact_email": {
+          "label": "Contact email shown in footer",
+          "info": "Defaults to the store email."
+        },
+        "whatsapp": { "info": "Format: https://wa.me/ followed by the country code and number, digits only." }
+      }
+    }
+  }
+}
