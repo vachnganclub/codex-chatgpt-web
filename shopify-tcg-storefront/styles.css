@@ -147,6 +147,7 @@ body.annotate .anno b{font-weight:600}
 .pill-sea{background:var(--sea-soft);color:var(--sea)}
 .pill-card{background:var(--volt-soft);color:var(--volt)}
 .pill-pack{background:var(--foil-soft);color:var(--foil)}
+.pill-sealed{background:var(--surface-3);color:var(--ink-2)}
 .pill-ok{background:var(--ok-soft);color:var(--ok)}
 .pill-warn{background:var(--warn-soft);color:var(--warn)}
 .pill-stop{background:var(--stop-soft);color:var(--stop)}

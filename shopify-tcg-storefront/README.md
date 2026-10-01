@@ -1,8 +1,20 @@
 # Giao diện Shopify — cửa hàng thẻ bài Pokémon & One Piece
 
-Bản thiết kế giao diện (prototype chạy được) cho store Shopify bán thẻ bài, theo tài liệu
-`shopify_tcg_master_prompt_full.md`. Dùng để **duyệt bố cục và luồng mua hàng trước khi
-dựng thật trong Theme Editor**.
+Hai thứ trong thư mục này:
+
+| | Là gì | Mở ở đâu |
+|---|---|---|
+| **Prototype** (`index.html`) | Bản thiết kế giao diện chạy được, có chú thích S00–S11 | Artifact đã publish, hoặc HTTP server tĩnh |
+| **Tài liệu triển khai** (`docs/`) | 10 tài liệu S00–S11, mỗi cái đủ 5 khối: mục tiêu · các bước trong Admin · dữ liệu đầu vào · ca kiểm thử · nghiệm thu | [`docs/README.md`](docs/README.md), hoặc `guide.html` đã publish |
+
+Cả hai dành cho store **adamantile.com**, theo `shopify_tcg_master_prompt_full.md`.
+
+> **Theme đang chạy đã được dựng riêng cho dự án này.** `tcg-vault-theme-3` có sẵn
+> `wholesale-form`, `main-feedback`, `main-policy`, `main-product` với variant picker, bộ chọn
+> quốc gia, và 3 template trang. Prototype trong thư mục này đã được chỉnh để **khớp đúng quy ước
+> của theme đó**: option variant tên `Purchase type` với value `card`/`pack`, tag prefix `unit:` và
+> `rarity:`, ảnh feedback vuông 1:1. Chi tiết thực trạng store nằm ở
+> [`docs/README.md`](docs/README.md).
 
 ## Mở bản thiết kế
 
@@ -30,7 +42,7 @@ vào quirks mode; dùng một HTTP server tĩnh cho đúng.
 |---|---|---|
 | S01 | `#home` | `/` |
 | S10 | `#pokemon`, `#one-piece` | `/collections/pokemon`, `/collections/one-piece` |
-| S10 | `#singles`, `#bulk` | `/collections/singles`, `/collections/bulk` |
+| S10 | `#singles`, `#bulk` | `/collections/single-cards`, `/collections/bulk-packs` |
 | S06 | `#p-<id>` (ví dụ `#p-pk-sar`) | `/products/<handle>` |
 | S07 | `#cart` | `/cart` |
 | S08 | `#checkout` | Trang Checkout của Shopify (chỉ xem trước branding) |
@@ -76,7 +88,21 @@ Danh sách đầy đủ những gì còn thiếu nằm ở trang `#spec` → **C
   Shopify Plus.
 - Thiếu Shipping zone cho một nước là khách nước đó không checkout được dù sản phẩm vẫn hiện.
 
+## Sửa tài liệu
+
+Markdown trong `docs/` là nguồn sự thật duy nhất. `guide.html` được sinh ra từ nó:
+
+```
+python3 build-guide.py
+```
+
+Sửa `docs/*.md` rồi chạy lại lệnh trên, sau đó publish lại `guide.html`. Đừng sửa `guide.html`
+trực tiếp — lần build sau sẽ ghi đè.
+
 ## Trạng thái store thật
 
-Bản thiết kế này **chưa thay đổi gì** trên store `adamantile.com`: không tạo product,
-collection, page, market hay theme nào. Mọi thứ ở đây là file tĩnh.
+Prototype và tài liệu **chưa thay đổi gì** trên store `adamantile.com`: không tạo hay sửa product,
+collection, page, market, metafield, menu hay theme nào. Toàn bộ thông tin về store trong tài liệu
+lấy bằng truy vấn **chỉ đọc** qua Admin API ngày 01/10/2026.
+
+Mọi thao tác ghi lên store đều cần bạn duyệt trước.

@@ -74,7 +74,15 @@ const PRODUCTS = [
   P({ id:'op-bulk-uc', game:'one-piece', name:'Bulk Pack · Uncommon (UC)', set:'Hỗn hợp set', num:'—',
       rarity:'UC', rarityLabel:'Uncommon', cond:'NM–LP', bulk:true, newIn:true,
       variants:[ {opt:'Pack 100 lá', unit:'pack', per:100, price:12, stock:30},
-                 {opt:'Pack 500 lá', unit:'pack', per:500, price:48, stock:10} ] })
+                 {opt:'Pack 500 lá', unit:'pack', per:500, price:48, stock:10} ] }),
+
+  /* Hàng sealed — 18/34 sản phẩm thật của store thuộc loại này */
+  P({ id:'pk-sealed-box', game:'pokemon', name:'Booster Box — [tên set]', set:'m6a', num:'—',
+      rarity:'', rarityLabel:'', cond:'Sealed', sealed:true, packNote:'30 booster packs × 5 cards',
+      variants:[ {opt:'Booster Box', unit:'sealed', per:150, price:180, stock:10} ] }),
+  P({ id:'op-sealed-box', game:'one-piece', name:'Booster Pack Box — [tên set]', set:'OP-11', num:'—',
+      rarity:'', rarityLabel:'', cond:'Sealed', sealed:true, packNote:'24 booster packs × 6 cards',
+      variants:[ {opt:'Booster Box', unit:'sealed', per:144, price:125, stock:10} ] })
 ];
 
 const GAME = {
@@ -87,16 +95,16 @@ const COLLECTIONS = {
                  blurb:'Thẻ lẻ và pack theo hạng hiếm của dòng Pokémon TCG. Mô tả collection do khách cung cấp.' },
   'one-piece': { title:'One Piece', game:'one-piece', handle:'/collections/one-piece',
                  blurb:'Thẻ lẻ và pack theo hạng hiếm của dòng One Piece Card Game. Mô tả collection do khách cung cấp.' },
-  'singles':   { title:'Mua lẻ — Single Cards', kind:'card', handle:'/collections/singles',
+  'singles':   { title:'Mua lẻ — Single Cards', kind:'card', handle:'/collections/single-cards',
                  blurb:'Mua từng lá, đơn vị tính là “card”. Mỗi lá được chụp ảnh riêng và ghi rõ tình trạng.' },
-  'bulk':      { title:'Mua số lượng lớn — Bulk Packs', kind:'pack', handle:'/collections/bulk',
+  'bulk':      { title:'Mua số lượng lớn — Bulk Packs', kind:'pack', handle:'/collections/bulk-packs',
                  blurb:'Mua theo pack, đơn vị tính là “pack”. Mỗi pack gồm số lá cố định, cùng một hạng hiếm.' }
 };
 
 const NAV = [
   ['Home', '#home', '/'],
-  ['Mua lẻ', '#singles', '/collections/singles'],
-  ['Mua số lượng lớn', '#bulk', '/collections/bulk'],
+  ['Mua lẻ', '#singles', '/collections/single-cards'],
+  ['Mua số lượng lớn', '#bulk', '/collections/bulk-packs'],
   ['Pokémon', '#pokemon', '/collections/pokemon'],
   ['One Piece', '#one-piece', '/collections/one-piece'],
   ['Giỏ hàng', '#cart', '/cart']
@@ -131,11 +139,14 @@ function gamePill(p) {
   const g = GAME[p.game];
   return '<span class="pill ' + g.pill + '">' + g.label + '</span>';
 }
+const UNITS = ['card', 'pack', 'sealed'];
 function unitPills(p) {
-  let out = '';
-  if (hasUnit(p, 'card')) out += '<span class="pill pill-card">card</span>';
-  if (hasUnit(p, 'pack')) out += '<span class="pill pill-pack">pack</span>';
-  return out;
+  return UNITS.filter(u => hasUnit(p, u))
+    .map(u => '<span class="pill pill-' + u + '">' + u + '</span>').join('');
+}
+/* đơn vị của variant rẻ nhất — dùng cho dòng "từ $x / <đơn vị>" trên thẻ sản phẩm */
+function fromUnit(p) {
+  return p.variants.reduce((a, b) => (b.price < a.price ? b : a)).unit;
 }
 function stockPill(p) {
   if (!inStock(p)) return '<span class="pill pill-stop">hết hàng</span>';
@@ -144,7 +155,7 @@ function stockPill(p) {
   return '<span class="pill pill-ok">còn hàng</span>';
 }
 function art(p, cls) {
-  const pack = p.bulk || !hasUnit(p, 'card');
+  const pack = p.bulk || p.sealed || !hasUnit(p, 'card');
   return '<div class="art ' + (pack ? 'pack ' : '') + (cls || '') + '">' +
     '<div class="frame"></div>' +
     '<div class="label"><b>' + (pack ? 'ẢNH PACK' : 'ẢNH LÁ BÀI') + '</b>' +
@@ -282,9 +293,9 @@ function pcard(p) {
     art(p) +
     '<div class="tags">' + gamePill(p) + unitPills(p) + '</div>' +
     '<span class="title">' + p.name + '</span>' +
-    '<span class="sub">' + p.set + (p.num !== '—' ? ' · ' + p.num : '') + ' · ' + p.rarity + ' · ' + p.cond + '</span>' +
+    '<span class="sub">' + p.set + (p.num !== '—' ? ' · ' + p.num : '') + (p.rarity ? ' · ' + p.rarity : '') + ' · ' + p.cond + '</span>' +
     '<div class="price-row"><span><span class="price-from">từ</span><span class="price">' + money(fromPrice(p)) + '</span></span>' +
-    '<span class="unit">/ ' + (hasUnit(p, 'card') ? 'card' : 'pack') + '</span></div>' +
+    '<span class="unit">/ ' + fromUnit(p) + '</span></div>' +
     '<div class="tags">' + stockPill(p) + '</div></a>';
 }
 
@@ -315,7 +326,7 @@ function viewCollection(key) {
   if (f.sort === 'newest') list = list.slice().sort((a, b) => (b.newIn ? 1 : 0) - (a.newIn ? 1 : 0));
 
   const rarities = [];
-  base.forEach(p => { if (rarities.indexOf(p.rarity) === -1) rarities.push(p.rarity); });
+  base.forEach(p => { if (p.rarity && rarities.indexOf(p.rarity) === -1) rarities.push(p.rarity); });
 
   const grp = (title, body) => '<div class="fgroup"><h4>' + title + '</h4>' + body + '</div>';
   const radio = (name, val, label, cur, cnt) =>
@@ -332,7 +343,8 @@ function viewCollection(key) {
         : [
             radio('fkind', 'all', 'Tất cả', f.kind, base.length),
             radio('fkind', 'card', 'Mua lẻ (card)', f.kind, base.filter(p => hasUnit(p, 'card')).length),
-            radio('fkind', 'pack', 'Mua pack', f.kind, base.filter(p => hasUnit(p, 'pack')).length)
+            radio('fkind', 'pack', 'Mua pack', f.kind, base.filter(p => hasUnit(p, 'pack')).length),
+            radio('fkind', 'sealed', 'Hàng sealed', f.kind, base.filter(p => hasUnit(p, 'sealed')).length)
           ].join('')) +
       (c.game ? '' : grp('Dòng game', [
         radio('fgame', 'all', 'Tất cả', f.game, base.length),
@@ -389,7 +401,7 @@ function viewProduct(id) {
   return '<div class="rail">' +
     '<p class="mono" style="font-size:.7rem;color:var(--muted);margin-bottom:14px">' +
       '<a href="#home" style="color:inherit">Home</a> / <a href="#' + p.game + '" style="color:inherit">' + g.label + '</a> / /products/' + p.id + '</p>' +
-    anno('S06 · /products/&lt;handle&gt;', 'Theme section “Product information”. Option tên <code class="mono">Hình thức mua</code>; value <code class="mono">Card</code> hoặc <code class="mono">Pack N lá</code>. Mỗi variant có SKU, giá, tồn kho và ảnh riêng.') +
+    anno('S06 · /products/&lt;handle&gt;', 'Theme section “Product information”. Option tên <code class="mono">Purchase type</code>; value <code class="mono">card</code> hoặc <code class="mono">pack</code>. Mỗi variant có SKU, giá, tồn kho và ảnh riêng.') +
     '<div class="pdp">' +
       '<div class="pdp-media">' + art(p, 'big') +
         '<div class="thumbs">' +
@@ -400,9 +412,10 @@ function viewProduct(id) {
       '</div>' +
 
       '<div>' +
-        '<div class="meta-line">' + gamePill(p) + '<span class="pill pill-line">' + p.rarity + ' · ' + p.rarityLabel + '</span>' + stockPill(p) + (p.newIn ? '<span class="pill pill-card">mới về</span>' : '') + '</div>' +
+        '<div class="meta-line">' + gamePill(p) + (p.rarity ? '<span class="pill pill-line">' + p.rarity + ' · ' + p.rarityLabel + '</span>' : '') + unitPills(p) + stockPill(p) + (p.newIn ? '<span class="pill pill-card">mới về</span>' : '') + '</div>' +
         '<h1>' + p.name + '</h1>' +
         '<p class="mono" style="font-size:.74rem;color:var(--muted);letter-spacing:.05em">SET ' + p.set + (p.num !== '—' ? ' · ' + p.num : '') + ' · TÌNH TRẠNG ' + p.cond + ' · SKU ' + p.id.toUpperCase() + '-' + (sel + 1) + '</p>' +
+        (p.packNote ? '<p class="mono" style="font-size:.72rem;color:var(--foil);margin-top:6px">' + p.packNote + ' <span class="ph">custom.pack_contents</span></p>' : '') +
 
         '<div class="price-block">' +
           '<span class="big">' + money(v.price) + '</span>' +
@@ -410,11 +423,11 @@ function viewProduct(id) {
         '</div>' +
 
         '<div class="vgroup">' + anno('S06 · Variant', 'Đổi variant phải cập nhật đồng thời: giá, SKU, tồn kho, ảnh. Variant hết hàng vẫn hiển thị nhưng bị vô hiệu hoá.') +
-          '<span class="lbl">Hình thức mua</span>' +
+          '<span class="lbl">Purchase type</span>' +
           '<div class="vopts">' + p.variants.map((vv, i) =>
             '<label class="vopt"><input type="radio" name="variant" value="' + i + '"' + (i === sel ? ' checked' : '') + (vv.stock === 0 ? ' disabled' : '') + '>' +
               '<span class="vname">' + vv.opt + '<span class="pill ' + (vv.unit === 'card' ? 'pill-card' : 'pill-pack') + '">' + vv.unit + '</span></span>' +
-              '<span class="vmeta">' + (vv.per > 1 ? vv.per + ' lá · cùng hạng ' + p.rarity : '1 lá · ' + p.cond) + '</span>' +
+              '<span class="vmeta">' + (vv.unit === 'sealed' ? p.packNote : vv.per > 1 ? vv.per + ' lá · cùng hạng ' + p.rarity : '1 lá · ' + p.cond) + '</span>' +
               '<span class="vprice">' + money(vv.price) + '</span>' +
               '<span class="vmeta">' + (vv.stock > 0 ? 'còn ' + vv.stock + ' ' + vv.unit : 'hết hàng') + '</span>' +
             '</label>').join('') +
@@ -435,7 +448,7 @@ function viewProduct(id) {
         '<div class="acc">' +
           '<details open><summary>Mô tả</summary><div class="body"><span class="ph">[Mô tả sản phẩm — khách cung cấp]</span><p style="margin-top:8px">Khung mô tả bắt buộc: tên lá bài · set · số thứ tự · hạng hiếm · ngôn ngữ in · tình trạng · ghi chú khuyết điểm nếu có.</p></div></details>' +
           '<details><summary>Thông số</summary><div class="body"><table class="spectable">' +
-            [['Dòng game', g.label], ['Set', p.set], ['Số thứ tự', p.num], ['Hạng hiếm', p.rarity + ' · ' + p.rarityLabel],
+            [['Dòng game', g.label], ['Set', p.set], ['Số thứ tự', p.num], ['Hạng hiếm', p.rarity ? p.rarity + ' · ' + p.rarityLabel : '— (không áp dụng cho hàng sealed)'],
              ['Tình trạng', p.cond], ['Đơn vị tính', v.unit], ['Số lá trong 1 ' + v.unit, String(v.per)],
              ['Ngôn ngữ in', '[CẦN CUNG CẤP]'], ['Tồn kho', v.stock + ' ' + v.unit]]
             .map(([k, val]) => '<tr><th>' + k + '</th><td class="mono">' + val + '</td></tr>').join('') +
@@ -604,12 +617,12 @@ function viewWholesale() {
         '<div class="fld full"><label>Preferred contact <span class="req">*</span></label>' +
           '<span class="hint">Chọn một kênh rồi nhập ID — khách quốc tế thường không dùng điện thoại</span>' +
           '<div class="chiprow" id="w-channels">' +
-            ['WhatsApp', 'LINE', 'Instagram', 'Telegram', 'Email only'].map(c =>
+            ['WhatsApp', 'LINE', 'Instagram', 'Telegram'].map(c =>
               '<label class="chip"><input type="radio" name="channel" value="' + c + '"' + '>' + c + '</label>').join('') +
           '</div>' +
           '<span class="err" data-err="channel">Please choose how you would like to be contacted.</span></div>' +
 
-        '<div class="fld full" id="wrap-handle" hidden><label for="w-handle">Account ID / number on <span id="chname">that channel</span> <span class="req">*</span></label>' +
+        '<div class="fld full" id="wrap-handle"><label for="w-handle">Contact ID / phone number<span class="req"> *</span> <span id="chname" class="ph">[kênh đã chọn]</span></label>' +
           '<input id="w-handle" type="text" placeholder="e.g. +65 8xxx xxxx, @yourhandle">' +
           '<span class="err" data-err="w-handle">Enter the ID or number for the channel you picked.</span></div>' +
 
@@ -638,7 +651,7 @@ function viewWholesale() {
        ['Email', 'Bắt buộc, đúng định dạng email', 'Enter a valid email address, e.g. you@company.com'],
        ['Products &amp; Quantity', 'Bắt buộc, phải chứa ít nhất 1 chữ số', 'Please list at least one product with a quantity.'],
        ['Preferred contact', 'Bắt buộc chọn 1 kênh', 'Please choose how you would like to be contacted.'],
-       ['Account ID', 'Bắt buộc nếu kênh ≠ Email only', 'Enter the ID or number for the channel you picked.'],
+       ['Contact ID', 'Bắt buộc, ≥ 3 ký tự — theme bắt buộc kể cả khi khách chỉ muốn trao đổi qua email', 'Please enter your ID or number for the selected channel.'],
        ['Message', 'Không bắt buộc', '—'],
        ['Consent', 'Bắt buộc tick', 'Please accept before sending.']]
       .map(r => '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td class="mono">' + r[2] + '</td></tr>').join('') +
@@ -660,7 +673,7 @@ function fld(id, label, type, ph, req, hint) {
 /* ================================================================ S11 FEEDBACK */
 function fbcard(i) {
   return '<div class="fbcard">' +
-    '<div class="shot">ẢNH KHÁCH GỬI (tuỳ chọn)<br>4:3 · 1200 × 900 · object-fit: cover</div>' +
+    '<div class="shot">ẢNH KHÁCH GỬI (tuỳ chọn)<br>vuông 1:1 · ≥ 800 × 800 · crop vuông</div>' +
     '<blockquote>[Nội dung feedback ' + (i + 1) + ' — admin dán nguyên văn, không sửa ý]</blockquote>' +
     '<div class="who"><span class="avatar">AVATAR</span>' +
       '<span><span class="nm ph">[Tên khách]</span><span class="ct">[Quốc gia]</span></span></div>' +
@@ -682,12 +695,12 @@ function viewFeedback() {
       [['1', 'Online Store → Pages → mở trang <code>feedback</code>'],
        ['2', 'Trong trình soạn thảo, bấm nút chèn khối lặp lại sẵn có (nhân bản một ô feedback cũ)'],
        ['3', 'Thay 4 phần: nội dung nhận xét, tên khách, quốc gia, ảnh'],
-       ['4', 'Ảnh: Content → Files → Upload, chọn file 1200 × 900, rồi chèn vào ô'],
+       ['4', 'Ảnh: bấm <b>Select image</b> → Upload, chọn file vuông ≥ 800 × 800'],
        ['5', 'Save, mở trang thật trên điện thoại kiểm tra ảnh không bị méo'],
        ['6', 'Xoá feedback: xoá cả khối, không để ô trống giữa lưới']]
       .map(r => '<tr><td class="mono">' + r[0] + '</td><td>' + r[1] + '</td></tr>').join('') +
       '</tbody></table></div>' +
-      '<div class="callout ok" style="margin-top:16px"><b>Quy cách ảnh.</b> Tỉ lệ 4:3, tối thiểu 1200 × 900, ≤ 300 KB, định dạng JPG. Ô ảnh dùng <code>aspect-ratio: 4/3</code> + <code>object-fit: cover</code> nên ảnh lệch tỉ lệ bị cắt bớt chứ không méo. Ảnh dọc thì crop sẵn trước khi upload.</div>' +
+      '<div class="callout ok" style="margin-top:16px"><b>Quy cách ảnh (theo đúng theme).</b> Vuông <b>1:1</b>, tối thiểu <b>800 × 800</b>, JPG hoặc WEBP, dưới <b>300 KB</b>. Theme crop về vuông nên ảnh lệch tỉ lệ bị <b>cắt bớt</b> chứ không méo — ảnh dọc chụp bằng điện thoại phải crop vuông trước khi upload, nếu không mất phần trên và dưới.</div>' +
     '</section></div>';
 }
 
@@ -738,6 +751,28 @@ function viewSpec() {
     '<h1>Bảng giao việc giao diện</h1>' +
     '<p class="lede" style="margin-top:10px">Trang này không thuộc storefront. Nó ánh xạ từng khối trên bản thiết kế sang hạng mục S00–S11, liệt kê dữ liệu còn thiếu và bộ ca kiểm thử.</p></div></section>' +
 
+    '<section><div class="sec-head"><h2>Thực trạng store thật</h2></div>' +
+      '<div class="callout" style="margin-bottom:16px"><b>Theme đang chạy đã được dựng riêng cho dự án này.</b> ' +
+      '<code>tcg-vault-theme-3</code> có sẵn <code>wholesale-form</code>, <code>main-feedback</code>, <code>main-policy</code>, ' +
+      '<code>main-product</code> với variant picker, và cả bộ chọn quốc gia. Ba template trang cũng đã có. ' +
+      'Nên phần lớn việc còn lại <b>không phải viết code, mà là tạo dữ liệu và cấu hình</b>. ' +
+      'Bản thiết kế này đã chỉnh để khớp đúng quy ước của theme đó.</div>' +
+      tbl(['Hạng mục', 'Thực trạng', 'Khoảng trống'],
+        [['Markets', 'Chỉ <b>1 market</b>: “Việt Nam”, <code>currencySettings = null</code>', 'Chưa có US / EU / SG. Bộ chọn quốc gia <b>đang không hiện</b> vì theme cần &gt; 1 quốc gia'],
+         ['Sản phẩm', '34 sản phẩm: <b>18 sealed thật</b> (tag rỗng, SKU rỗng, 1 variant) + <b>16 demo</b> (đã có tag đúng chuẩn, không thuộc collection nào)', 'Chưa có <b>lá bài lẻ thật nào</b>. 18 SP sealed chưa gắn tag. Có 1 cặp sản phẩm trùng'],
+         ['Collection', '<code>pokemon</code> (13), <code>one-piece</code> (5), <code>frontpage</code> (1) — tất cả <b>thủ công</b>', 'Chưa có <code>single-cards</code> và <code>bulk-packs</code> mà header của theme đang trỏ tới'],
+         ['Pages', 'Chỉ có 1 page: “Liên hệ”', 'Thiếu cả 3: <code>wholesale-inquiry</code>, <code>privacy-policy</code>, <code>feedback</code> — nên 2 thẻ ở trang chủ đang 404'],
+         ['Menu', '<code>main-menu</code>: Home, Product, Contact', 'Cần 6 mục theo S09; footer menu chỉ có “Tìm kiếm”'],
+         ['Metafield', 'Chưa khai báo', 'Theme đọc 6 metafield <code>custom.*</code>: rarity, set_name, card_number, condition, language, pack_contents'],
+         ['Đơn hàng', '<b>0 đơn</b>', 'Luồng checkout chưa từng chạy thử lần nào'],
+         ['Theme settings', 'Màu, font, logo, <code>purchase_option_name</code>, tag prefix đã đặt', 'Trống toàn bộ phần liên hệ và mạng xã hội → cột “Contact us” ở footer đang rỗng'],
+         ['Plan', 'Basic, tiền tệ gốc USD, giá gồm thuế', 'Checkout chỉ sửa được logo và màu; số market tối đa phụ thuộc plan']]) +
+      '<div class="callout warn" style="margin-top:16px"><b>Hai điểm cần xử lý sớm.</b> ' +
+      'Ảnh banner trang chủ đang là file tên <code>…Preview_Editorial_Use_Only.jpg</code> — bản preview, không dùng được cho store thương mại. ' +
+      'Và template Feedback + Privacy đang chứa nội dung mẫu (“Sample review 1”, “DEMO PLACEHOLDER”) sẽ hiện ra cho khách đọc nếu không xoá.</div>' +
+      '<div class="callout ok" style="margin-top:12px">Chi tiết từng hạng mục, kèm 5 khối theo quy định (mục tiêu · các bước · dữ liệu đầu vào · ca kiểm thử · nghiệm thu), nằm trong thư mục <code>docs/</code> của repo: 10 tài liệu S00–S11.</div>' +
+    '</section>' +
+
     '<section><div class="sec-head"><h2>Menu → đường dẫn (S09)</h2></div>' +
       tbl(['Mục menu', 'Đường dẫn Shopify', 'Trang trong bản thiết kế'],
         NAV.map(([l, h, path]) => [l, '<code>' + path + '</code>', '<a href="' + h + '">' + h + '</a>'])) +
@@ -746,9 +781,9 @@ function viewSpec() {
     '<section><div class="sec-head"><h2>Quy ước tag (S00)</h2></div>' +
       '<p class="lede" style="margin-bottom:14px">Tag viết thường, không dấu, dùng dấu hai chấm làm tiền tố. Collection tự động lọc theo tiền tố; Search &amp; Discovery biến tiền tố thành bộ lọc.</p>' +
       tbl(['Tiền tố', 'Giá trị', 'Dùng cho'],
-        [['<code>game:</code>', '<code>game:pokemon</code> · <code>game:one-piece</code>', 'Điều kiện tự động của 2 collection chính'],
-         ['<code>type:</code>', '<code>type:card</code> · <code>type:pack</code>', 'Phân biệt bán lẻ / bán pack, lọc ở collection'],
-         ['<code>rarity:</code>', '<code>rarity:sar</code> · <code>rarity:sr</code> · <code>rarity:ar</code> · <code>rarity:rr</code> · <code>rarity:ur</code> · <code>rarity:sec</code> · <code>rarity:mr</code> · <code>rarity:l</code> · <code>rarity:r</code> · <code>rarity:uc</code>', 'Bộ lọc hạng hiếm'],
+        [['Dòng game (không tiền tố)', '<code>pokemon</code> · <code>one-piece</code>', 'Điều kiện tự động của 2 collection chính. Theme cũng nhận dạng <code>game:pokemon</code> vì nó so sánh qua <code>| handle</code>'],
+         ['<code>unit:</code>', '<code>unit:card</code> · <code>unit:pack</code> · <code>unit:sealed</code>', 'Phân biệt bán lẻ / bán pack / hàng sealed. Tiền tố lấy từ theme setting <code>unit_tag_prefix</code>'],
+         ['<code>rarity:</code>', 'Giá trị đang dùng trong store: <code>rarity:common</code> · <code>uncommon</code> · <code>rare</code> · <code>super-rare</code> · <code>holo-rare</code> · <code>ultra-rare</code> · <code>secret-rare</code> · <code>leader</code>', 'Badge hạng hiếm + bộ lọc. Theme đổi <code>-</code> thành khoảng trắng khi hiển thị'],
          ['<code>set:</code>', '<code>set:sv8a</code> · <code>set:op-09</code>', 'Lọc theo set, dùng sau khi đủ dữ liệu'],
          ['<code>cond:</code>', '<code>cond:nm</code> · <code>cond:lp</code> · <code>cond:mp</code>', 'Tình trạng lá, chỉ gắn cho hàng lẻ'],
          ['<code>packsize:</code>', '<code>packsize:10</code> · <code>packsize:25</code> · <code>packsize:100</code> · <code>packsize:500</code>', 'Lọc theo số lá mỗi pack']]) +
@@ -756,9 +791,9 @@ function viewSpec() {
 
     '<section><div class="sec-head"><h2>Variant (S06)</h2></div>' +
       tbl(['Mục', 'Quy ước', 'Ví dụ'],
-        [['Tên Option', 'Đúng một option, tên <code>Hình thức mua</code>', '—'],
-         ['Value bán lẻ', 'Đúng chữ <code>Card</code>', 'Card'],
-         ['Value bán pack', '<code>Pack {số} lá</code>', 'Pack 10 lá · Pack 500 lá'],
+        [['Tên Option', 'Đúng một option, tên <code>Purchase type</code> (khớp theme setting <code>purchase_option_name</code>)', '—'],
+         ['Value bán lẻ', 'Đúng chữ <code>card</code>', 'card'],
+         ['Value bán pack', 'Đúng chữ <code>pack</code>; số lá ghi ở metafield <code>custom.pack_contents</code>', 'pack'],
          ['SKU', '<code>{MÃ-SP}-{số variant}</code>', 'PK-SAR-1 · PK-SAR-2'],
          ['Đơn vị tính hiển thị', '<code>card</code> hoặc <code>pack</code>, chữ thường', '$12.50 / card'],
          ['Tồn kho', 'Track riêng từng variant, không dùng tồn kho cấp sản phẩm', '—']]) +
@@ -778,7 +813,7 @@ function viewSpec() {
          ['Ảnh lá bài (card)', '63:88 (trim thật)', '900 × 1256', '≤ 300 KB'],
          ['Ảnh sản phẩm trên PDP', '1:1', '1600 × 1600', '≤ 300 KB'],
          ['Ảnh pack', '4:5', '1200 × 1500', '≤ 300 KB'],
-         ['Ảnh feedback', '4:3', '1200 × 900', '≤ 300 KB'],
+         ['Ảnh feedback', '1:1 (theo theme)', '800 × 800', '≤ 300 KB'],
          ['Logo header', 'tự do, nền trong', 'cao ≥ 120 px', 'PNG / SVG'],
          ['Logo checkout', '4:1', '560 × 140', 'PNG nền trong']]) +
     '</section>' +
@@ -937,9 +972,9 @@ document.addEventListener('change', (e) => {
   if (t.id === 'fsort') { state.filters.sort = t.value; render(); return; }
   if (t.name === 'variant') { state.pdp.vi = +t.value; render(); return; }
   if (t.name === 'channel') {
-    const needs = t.value !== 'Email only';
-    $('#wrap-handle').hidden = !needs;
-    $('#chname').textContent = t.value;
+    const el = $('#chname');
+    el.textContent = t.value;
+    el.classList.remove('ph');
     return;
   }
   const li = t.dataset && t.dataset.lineinput;
@@ -974,8 +1009,7 @@ document.addEventListener('submit', (e) => {
   chWrap.classList.toggle('invalid', !ch);
   if (!ch) bad.push('channel');
 
-  if (ch && ch.value !== 'Email only') mark('w-handle', $('#w-handle').value.trim().length >= 3);
-  else { const w = $('#w-handle'); if (w) w.closest('.fld').classList.remove('invalid'); }
+  mark('w-handle', $('#w-handle').value.trim().length >= 3);
 
   const consentWrap = $('#w-consent').closest('.fld');
   consentWrap.classList.toggle('invalid', !$('#w-consent').checked);
