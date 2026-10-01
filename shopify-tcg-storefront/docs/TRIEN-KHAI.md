@@ -191,11 +191,11 @@ Tôi không ghi được file vào theme đang live (bị chặn, và đúng ra 
 
 | # | Việc | Đường đi |
 |---|---|---|
-| 1 | **Xoá chữ "DEMO PLACEHOLDER"** | Customize → dropdown trên → Pages → *Privacy Policy & Cookie Policy* → section **Privacy & Cookie policy** → ô **Cookie Policy text** → xoá sạch, dán nội dung thật |
-| 2 | **Xoá 3 block "Sample review"** | Customize → Pages → *Customer feedback* → section **Customer feedback** → xoá `Sample review 1/2/3` |
+| 1 | ~~**Xoá chữ "DEMO PLACEHOLDER"**~~ — **đã làm trên bản sao theme**, xem mục 11 | Customize → dropdown trên → Pages → *Privacy Policy & Cookie Policy* → section **Privacy & Cookie policy** → ô **Cookie Policy text** → xoá sạch, dán nội dung thật |
+| 2 | ~~**Xoá 3 block "Sample review"**~~ — **đã làm trên bản sao theme**, xem mục 11 | Customize → Pages → *Customer feedback* → section **Customer feedback** → xoá `Sample review 1/2/3` |
 | 3 | Sau bước 1 → **hiện trang Privacy** | Pages → Privacy Policy & Cookie Policy → Visibility → Visible |
 | 4 | Sau bước 2 và khi có feedback thật → **hiện trang Feedback** | Pages → Customer feedback → Visible |
-| 5 | **Thay ảnh hero** | Customize → Home page → Image banner → Image. Ảnh hiện tại tên `AdobeStock_…Preview_Editorial_Use_Only.jpg` — **bản preview, không được dùng cho store thương mại** |
+| 5 | **Thay ảnh hero** bằng ảnh có license (bản sao đã bỏ ảnh Adobe Stock, đang dùng ảnh kèm theme) | Customize → Home page → Image banner → Image. Ảnh hiện tại tên `AdobeStock_…Preview_Editorial_Use_Only.jpg` — **bản preview, không được dùng cho store thương mại** |
 | 6 | Thay 4 ảnh thẻ | Customize → Home page → section **Shop by game** → từng block |
 | 7 | Thay chữ demo mục About | Customize → Home page → **About us** → đang là "This is demo text…" |
 | 8 | Điền thông tin liên hệ | Customize → **Theme settings** → Contact & social: `contact_email`, `contact_whatsapp`, `contact_line`, `contact_telegram`, `social_instagram`… Đang **trống hết**, nên cột "Contact us" ở footer đang rỗng |
@@ -240,6 +240,75 @@ Availability, Price, Product type, và `custom.rarity`. Chi tiết ở
 
 ---
 
+## 11. Trang chủ dựng lại theo demo — đang ở bản sao theme, chờ bạn publish
+
+Tool chặn ghi file vào theme đang live, nên tôi **nhân bản** theme rồi dựng trang chủ trên bản sao.
+Bản sao giống hệt bản đang chạy ở mọi thứ khác (màu, font, logo, `purchase_option_name`, tag
+prefix), chỉ khác trang chủ và 2 template đã dọn.
+
+| | |
+|---|---|
+| Theme | `tcg-vault-theme-4 — Home theo demo` (id `188250521711`, UNPUBLISHED) |
+| **Xem trước** | `https://adamantile.com/?preview_theme_id=188250521711` |
+| Quản lý theme | `https://admin.shopify.com/store/un1pwt-qb/themes` |
+
+### 6 section mới của trang chủ
+
+| # | Section | Type | Nội dung |
+|---|---|---|---|
+| 1 | `hero` | `image-banner` | H1 "Pokémon & One Piece cards, single or by the pack" + đoạn mô tả + **3 nút**: Shop Pokémon · Shop One Piece · Buy in bulk |
+| 2 | `shop-by` | `link-cards` | "Shop by game" — 2 thẻ Pokémon và One Piece, màu riêng theo dòng game |
+| 3 | `units` | `rich-text` | "Single cards or bulk packs?" — giải thích 2 đơn vị bán + 2 nút sang `single-cards` và `bulk-packs`. Nền tô nhạt |
+| 4 | `featured-pokemon` | `featured-collection` | "New in Pokémon", 8 sản phẩm, có link "View all →" |
+| 5 | `featured-onepiece` | `featured-collection` | "New in One Piece", 8 sản phẩm |
+| 6 | `wholesale` | `rich-text` | "Need more than the listed quantity?" + nút sang Wholesale Inquiry |
+
+**Đã bỏ khỏi trang chủ:**
+
+- Section **About** — nó đang chứa nguyên văn chữ hướng dẫn *"This is demo text. Tell buyers who
+  you are…"*. Demo không có section này. Khi có 5 đoạn nội dung thật
+  ([S01 khối B5](S01-trang-chu.md)), thêm lại bằng Add section → Rich text.
+- Hai thẻ **Wholesale** và **Feedback** trong `link-cards` — Wholesale đã lên dải riêng ở section 6;
+  Feedback bỏ vì trang đó đang ẩn nên link sẽ 404.
+
+**Đã sửa ảnh hero.** Bản live đang trỏ tới `AdobeStock_1772944328_Preview_Editorial_Use_Only.jpg` —
+ảnh preview có watermark, **không được dùng cho store thương mại**. Bản sao bỏ tham chiếu đó và
+dùng `demo-hero.jpg` là ảnh đi kèm theme. Vẫn là ảnh tạm, nhưng không còn vấn đề bản quyền.
+
+### Dọn thêm trên bản sao — 2 việc trước đây phải làm tay
+
+| Template | Trước | Sau |
+|---|---|---|
+| `page.privacy-policy.json` | `cookie_text` chứa **"DEMO PLACEHOLDER…"** | Đã xoá sạch |
+| `page.feedback.json` | 3 block **"Sample review 1/2/3"** | Đã xoá cả 3 |
+
+Nghĩa là mục 10a bước 1 và 2 ở trên **đã xong** nếu bạn publish bản sao này.
+
+### 5 chỗ khác với demo — đều cần viết section mới
+
+| # | Demo có | Bản dựng được | Vì sao |
+|---|---|---|---|
+| 1 | Hero 2 cột, dải 3 lá bài nghiêng bên phải | Banner full-width, chữ overlay | `image-banner` là banner nền, không có layout 2 cột |
+| 2 | Hàng 3 thông tin ở hero: Giao hàng · Đóng gói · Thanh toán | Không có | `image-banner` chỉ có 3 block type: heading, text, button |
+| 3 | 2 thẻ card/pack cạnh nhau | 1 cột dọc | Theme không có section multicolumn, và `link-cards` luôn bắt buộc có ảnh |
+| 4 | Một lưới "Hàng mới về" gộp 2 dòng game | 2 lưới riêng theo dòng game | Không có collection gộp, và smart collection của Shopify **không lọc được theo ngày tạo** |
+| 5 | Dải trích 3 feedback | Không có | Chưa có feedback thật, và trang feedback đang ẩn nên link sẽ 404 |
+
+Muốn khớp tuyệt đối thì phải thêm 2 file section mới (`multicolumn.liquid` cho mục 3, và một
+section hero 2 cột cho mục 1–2). Nói nếu bạn muốn — tôi làm trên cùng bản sao này.
+
+### Cách publish
+
+1. Mở link **Xem trước** ở trên, kiểm trang chủ trên cả desktop và điện thoại.
+2. Admin → Online Store → Themes → tìm `tcg-vault-theme-4 — Home theo demo` → **Publish**.
+3. Theme cũ `tcg-vault-theme-3` tự chuyển thành Unpublished, giữ làm bản lùi.
+
+> ⚠️ **Thứ tự quan trọng.** Bản sao được tạo từ bản live tại thời điểm này. Nếu bạn sửa gì trong
+> Theme Editor của `tcg-vault-theme-3` **trước khi** publish bản sao, phần sửa đó sẽ mất. Publish
+> trước, rồi làm mọi việc Theme Editor còn lại ở mục 10a (bước 5–10) trên theme mới.
+
+---
+
 ## Trạng thái tổng kết
 
 | Mã | Hạng mục | Trạng thái |
@@ -247,10 +316,10 @@ Availability, Price, Product type, và `custom.rarity`. Chi tiết ở
 | S00 | Thiết lập chung, tag, Markets | **Xong phần cấu hình.** Còn: múi giờ, email, tồn kho thật, đơn thử |
 | S09 | Header, Footer, chọn tiền tệ | **Xong menu và Markets.** Còn: điền thông tin liên hệ trong Theme settings |
 | S10 | Collection | **Xong.** Còn: cài Search & Discovery để có filter |
-| S01 | Trang chủ | **Cấu trúc xong từ trước.** Còn: thay ảnh và chữ demo |
+| S01 | Trang chủ | **Dựng lại theo demo trên bản sao theme — chờ bạn publish** (mục 11). Còn: ảnh thật và nội dung About |
 | S06 | Trang sản phẩm | **Xong cho hàng sealed.** Còn: toàn bộ dữ liệu lá bài lẻ |
 | S07 | Giỏ hàng | **Xong.** Chỉ còn kiểm thử |
 | S08 | Thanh toán | **Chưa.** Cần branding, phí ship, và chạy đơn thử — store vẫn 0 đơn |
 | S04 | Wholesale Inquiry | **Xong và đang hiện.** Còn: đổi email nhận sang domain |
-| S05 | Privacy & Cookie | **Trang đã tạo, đang ẩn.** Chờ nội dung Cookie Policy |
-| S11 | Feedback | **Trang đã tạo, đang ẩn.** Chờ feedback thật (store chưa có đơn nào) |
+| S05 | Privacy & Cookie | **Trang đã tạo, đã xoá nội dung mẫu.** Đang ẩn, chờ nội dung Cookie Policy |
+| S11 | Feedback | **Trang đã tạo, đã xoá 3 review mẫu.** Đang ẩn, chờ feedback thật |
