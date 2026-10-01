@@ -1,6 +1,7 @@
 # TCG Vault – Theme Shopify cho cửa hàng thẻ bài Pokémon & One Piece
 
 Theme Online Store 2.0 được dựng theo tài liệu `shopify_tcg_master_prompt_full.md` (hạng mục S00 → S11).
+Giao diện cửa hàng (storefront) hoàn toàn bằng **tiếng Anh**; chỉ tài liệu này viết tiếng Việt. Khi tạo menu, page và collection trong Admin cũng đặt tên tiếng Anh.
 Theme không cần app trả phí: dùng Shopify Markets cho đa tiền tệ, form liên hệ có sẵn của Shopify cho Wholesale Inquiry,
 bộ lọc có sẵn của Shopify (app miễn phí *Search & Discovery*), và Checkout mặc định của Shopify.
 
@@ -221,14 +222,14 @@ Khi đổi variant: giá, giá gốc, đơn vị, SKU, tồn kho, ảnh, số l�
 
 **Menu đầu trang** (**Online Store → Navigation → Main menu**):
 
-| Mục menu | Đường dẫn |
+| Mục menu (tên hiển thị tiếng Anh) | Đường dẫn |
 |---|---|
 | Home | `/` |
-| Mua lẻ (Single cards) | `/collections/single-cards` |
-| Mua số lượng lớn (Bulk packs) | `/collections/bulk-packs` (có thể thêm mục con Wholesale Inquiry) |
+| Single cards (Mua lẻ) | `/collections/single-cards` |
+| Bulk packs (Mua số lượng lớn) | `/collections/bulk-packs` (có thể thêm mục con Wholesale Inquiry) |
 | Pokémon | `/collections/pokemon` |
 | One Piece | `/collections/one-piece` |
-| Giỏ hàng (Cart) | `/cart` |
+| Cart (Giỏ hàng) | `/cart` |
 
 **Chọn quốc gia/tiền tệ:** desktop ở góc phải header và trong footer; mobile nằm trong menu thu gọn (☰). Chọn quốc gia → trang tải lại, mọi giá đổi sang USD/EUR/SGD. Selector chỉ hiện khi có từ 2 market trở lên.
 
