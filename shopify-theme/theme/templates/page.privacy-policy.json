@@ -2,8 +2,12 @@
   "sections": {
     "main": {
       "type": "main-policy",
-      "settings": {}
+      "settings": {
+        "cookie_text": "<p><strong>DEMO PLACEHOLDER.</strong> The Cookie Policy text approved by your lawyer goes here (Customize › this page › Privacy & Cookie policy › Cookie Policy text).</p>"
+      }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main"
+  ]
 }

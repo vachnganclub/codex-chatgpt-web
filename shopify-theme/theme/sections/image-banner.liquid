@@ -27,6 +27,11 @@
             alt: section.settings.image_mobile.alt
         }}
       {%- endif -%}
+    {%- elsif section.settings.demo_image -%}
+      <picture>
+        <source media="(max-width: 749px)" srcset="{{ 'demo-hero-mobile.jpg' | asset_url }}">
+        <img src="{{ 'demo-hero.jpg' | asset_url }}" class="banner__image" alt="" width="2400" height="1350" fetchpriority="high">
+      </picture>
     {%- else -%}
       {{ 'lifestyle-2' | placeholder_svg_tag: 'banner__image placeholder-svg' }}
     {%- endif -%}
@@ -71,6 +76,12 @@
       "id": "image_mobile",
       "label": "Mobile image (optional)",
       "info": "4:5 portrait, at least 900 px wide."
+    },
+    {
+      "type": "checkbox",
+      "id": "demo_image",
+      "default": true,
+      "label": "Show demo artwork when no image is selected"
     },
     {
       "type": "select",
