@@ -13,6 +13,10 @@ Ký hiệu dùng xuyên suốt:
 
 ---
 
+> **Phần lớn tài liệu này đã được triển khai thật lên store ngày 01/10/2026.**
+> Xem [nhật ký triển khai](TRIEN-KHAI.md): những gì đã đổi trên `adamantile.com`, và danh sách
+> việc chỉ bạn làm được (Theme Editor, cài app, Checkout, dữ liệu còn thiếu).
+
 ## Phát hiện lớn nhất: theme đã được dựng riêng cho dự án này
 
 Theme đang chạy là **`tcg-vault-theme-3`** (role MAIN, id `188241117295`) — **không phải** Dawn hay

@@ -14,6 +14,7 @@ DOCS = os.path.join(HERE, 'docs')
 # token trên URL  ->  (file, nhãn ngắn, tiêu đề sidebar)
 PAGES = [
     ('index', 'README.md',                     '',    'Tổng quan & thực trạng store'),
+    ('done',  'TRIEN-KHAI.md',                 '✓',   'Đã triển khai thật — và phần còn lại'),
     ('s00',   'S00-thiet-lap-chung.md',        'S00', 'Thiết lập chung, tag, Markets'),
     ('s09',   'S09-header-footer-tien-te.md',  'S09', 'Header, Footer, bộ chọn tiền tệ'),
     ('s10',   'S10-collection.md',             'S10', 'Collection Pokémon / One Piece'),
