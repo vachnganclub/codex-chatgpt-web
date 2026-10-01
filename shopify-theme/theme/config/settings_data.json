@@ -1,0 +1,27 @@
+{
+  "current": "Default",
+  "presets": {
+    "Default": {
+      "logo_width": 140,
+      "color_background": "#ffffff",
+      "color_surface": "#f5f6fa",
+      "color_text": "#14161f",
+      "color_primary": "#1d3fbb",
+      "color_primary_contrast": "#ffffff",
+      "color_accent": "#ffcb05",
+      "color_pokemon": "#e3350d",
+      "color_onepiece": "#0b4f8a",
+      "color_sale": "#c2185b",
+      "type_heading_font": "assistant_n7",
+      "type_body_font": "assistant_n4",
+      "page_width": 1300,
+      "corner_radius": 10,
+      "purchase_option_name": "Purchase type",
+      "rarity_tag_prefix": "rarity:",
+      "unit_tag_prefix": "unit:",
+      "show_currency_code": true,
+      "low_stock_threshold": 5,
+      "show_cart_note": true
+    }
+  }
+}

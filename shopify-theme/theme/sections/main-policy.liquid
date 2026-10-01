@@ -1,0 +1,59 @@
+{%- comment -%}
+  S05 — /pages/privacy-policy with two parts:
+  Part 1 Privacy Policy  (#privacy-policy) = the page content written in Admin > Online Store > Pages.
+  Part 2 Cookie Policy   (#cookie-policy)  = the "Cookie Policy text" setting below, or another page.
+  Legal text must be supplied/approved by the store owner or their lawyer.
+  The cookie consent banner itself is configured in Settings > Customer privacy.
+{%- endcomment -%}
+{%- liquid
+  assign cookie_page = section.settings.cookie_page
+  assign cookie_text = section.settings.cookie_text
+-%}
+<section class="section policy">
+  <div class="page-width page-width--narrow">
+    <h1 class="page__title">{{ page.title | escape }}</h1>
+
+    <nav class="policy__toc" aria-label="{{ 'sections.policy.toc' | t }}">
+      <a href="#privacy-policy">{{ section.settings.privacy_heading | escape }}</a>
+      <a href="#cookie-policy">{{ section.settings.cookie_heading | escape }}</a>
+    </nav>
+
+    <article class="policy__part" id="privacy-policy">
+      <h2>{{ section.settings.privacy_heading | escape }}</h2>
+      {%- if page.content != blank -%}
+        <div class="rte">{{ page.content }}</div>
+      {%- elsif request.design_mode -%}
+        <p class="editor-note">{{ 'sections.policy.privacy_missing' | t }}</p>
+      {%- endif -%}
+    </article>
+
+    <article class="policy__part" id="cookie-policy">
+      <h2>{{ section.settings.cookie_heading | escape }}</h2>
+      {%- if cookie_page != blank and cookie_page.content != blank -%}
+        <div class="rte">{{ cookie_page.content }}</div>
+      {%- elsif cookie_text != blank -%}
+        <div class="rte">{{ cookie_text }}</div>
+      {%- elsif request.design_mode -%}
+        <p class="editor-note">{{ 'sections.policy.cookie_missing' | t }}</p>
+      {%- endif -%}
+    </article>
+
+    {%- if section.settings.last_updated != blank -%}
+      <p class="policy__updated">{{ section.settings.last_updated | escape }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Privacy & Cookie policy",
+  "settings": [
+    { "type": "text", "id": "privacy_heading", "default": "Privacy Policy", "label": "Part 1 heading" },
+    { "type": "paragraph", "content": "Part 1 text = the page content (Online Store > Pages > Privacy Policy)." },
+    { "type": "text", "id": "cookie_heading", "default": "Cookie Policy", "label": "Part 2 heading" },
+    { "type": "richtext", "id": "cookie_text", "label": "Cookie Policy text", "info": "[TO PROVIDE] Text approved by the store owner / lawyer." },
+    { "type": "page", "id": "cookie_page", "label": "Or use a separate page for the Cookie Policy", "info": "Overrides the text above when selected." },
+    { "type": "text", "id": "last_updated", "label": "Effective date line", "info": "e.g. Effective date: [date supplied by owner]" }
+  ]
+}
+{% endschema %}

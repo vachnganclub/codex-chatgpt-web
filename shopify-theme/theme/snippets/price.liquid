@@ -1,0 +1,45 @@
+{%- comment -%}
+  Renders a price that always follows the buyer's current market currency (Shopify Markets).
+  Accepts:
+  - product: {Object} product (optional if variant is passed)
+  - variant: {Object} variant to price (optional, defaults to selected/first available variant)
+  - show_from: {Boolean} prefix "From" when the product has several prices
+  - unit: {String} unit label ("card" / "pack") appended after the price
+{%- endcomment -%}
+{%- liquid
+  if variant == blank
+    assign target = product.selected_or_first_available_variant
+  else
+    assign target = variant
+  endif
+
+  if settings.show_currency_code
+    assign price_html = target.price | money_with_currency
+    assign compare_html = target.compare_at_price | money_with_currency
+    assign min_html = product.price_min | money_with_currency
+  else
+    assign price_html = target.price | money
+    assign compare_html = target.compare_at_price | money
+    assign min_html = product.price_min | money
+  endif
+
+  assign on_sale = false
+  if target.compare_at_price > target.price
+    assign on_sale = true
+  endif
+-%}
+<div class="price{% if on_sale %} price--on-sale{% endif %}{% if target.available == false %} price--sold-out{% endif %}">
+  {%- if show_from and product.price_varies -%}
+    <span class="price__regular">{{ 'products.product.price.from_price_html' | t: price: min_html }}</span>
+  {%- else -%}
+    <span class="price__regular" data-price>{{ price_html }}</span>
+    {%- if on_sale -%}
+      <s class="price__compare" data-compare-price>{{ compare_html }}</s>
+    {%- else -%}
+      <s class="price__compare" data-compare-price hidden></s>
+    {%- endif -%}
+  {%- endif -%}
+  {%- if unit != blank -%}
+    <span class="price__unit" data-price-unit>/ {{ unit }}</span>
+  {%- endif -%}
+</div>

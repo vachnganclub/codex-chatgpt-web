@@ -1,0 +1,42 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-feedback",
+      "blocks": {
+        "sample-1": {
+          "type": "feedback",
+          "settings": {
+            "name": "Sample review 1",
+            "country": "Country",
+            "quote": "<p>This is a sample review that shows the layout. Replace it with real feedback from a customer, with their permission, in the theme editor.</p>"
+          }
+        },
+        "sample-2": {
+          "type": "feedback",
+          "settings": {
+            "name": "Sample review 2",
+            "country": "Country",
+            "quote": "<p>This is a sample review that shows the layout. Replace it with real feedback from a customer, with their permission, in the theme editor.</p>"
+          }
+        },
+        "sample-3": {
+          "type": "feedback",
+          "settings": {
+            "name": "Sample review 3",
+            "country": "Country",
+            "quote": "<p>This is a sample review that shows the layout. Replace it with real feedback from a customer, with their permission, in the theme editor.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "sample-1",
+        "sample-2",
+        "sample-3"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

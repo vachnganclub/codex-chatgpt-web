@@ -1,0 +1,53 @@
+{%- comment -%}
+  Country / currency selector powered by Shopify Markets.
+  Choosing a country reloads the store in that market's currency (e.g. USD, EUR, SGD).
+  Accepts:
+  - id_suffix: {String} unique suffix so the selector can be rendered more than once per page
+{%- endcomment -%}
+{%- if localization.available_countries.size > 1 or localization.available_languages.size > 1 -%}
+  {%- form 'localization', class: 'localization-form' -%}
+    {%- if localization.available_countries.size > 1 -%}
+      <label class="visually-hidden" for="Country-{{ id_suffix }}">{{ 'localization.country_label' | t }}</label>
+      <select
+        id="Country-{{ id_suffix }}"
+        name="country_code"
+        class="localization-form__select"
+        data-autosubmit
+      >
+        {%- for country in localization.available_countries -%}
+          <option
+            value="{{ country.iso_code }}"
+            {% if country.iso_code == localization.country.iso_code %}
+              selected
+            {% endif %}
+          >
+            {{- country.name }} ({{ country.currency.iso_code }} {{ country.currency.symbol }})
+          </option>
+        {%- endfor -%}
+      </select>
+    {%- endif -%}
+    {%- if localization.available_languages.size > 1 -%}
+      <label class="visually-hidden" for="Language-{{ id_suffix }}">{{ 'localization.language_label' | t }}</label>
+      <select
+        id="Language-{{ id_suffix }}"
+        name="locale_code"
+        class="localization-form__select"
+        data-autosubmit
+      >
+        {%- for language in localization.available_languages -%}
+          <option
+            value="{{ language.iso_code }}"
+            {% if language.iso_code == localization.language.iso_code %}
+              selected
+            {% endif %}
+          >
+            {{- language.endonym_name | capitalize }}
+          </option>
+        {%- endfor -%}
+      </select>
+    {%- endif -%}
+    <noscript><button type="submit" class="button button--small">{{ 'localization.update' | t }}</button></noscript>
+  {%- endform -%}
+{%- elsif request.design_mode -%}
+  <span class="localization-form__hint">{{ 'localization.markets_hint' | t }}</span>
+{%- endif -%}

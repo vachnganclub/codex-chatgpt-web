@@ -1,0 +1,36 @@
+<section class="section blog">
+  <div class="page-width">
+    <h1 class="section__heading">{{ blog.title | escape }}</h1>
+    {%- paginate blog.articles by 12 -%}
+      <ul class="blog__grid" role="list">
+        {%- for article in blog.articles -%}
+          <li class="card">
+            <a href="{{ article.url }}" class="card__link">
+              {%- if article.image -%}
+                <div class="card__media card__media--wide">
+                  {%- assign art_alt = article.image.alt | default: article.title -%}
+                  {{ article.image | image_url: width: 800 | image_tag: loading: 'lazy', widths: '400, 800', sizes: '(min-width: 990px) 33vw, 100vw', alt: art_alt }}
+                </div>
+              {%- endif -%}
+              <div class="card__info">
+                <h2 class="card__title">{{ article.title | escape }}</h2>
+                <p class="card__meta">{{ article.published_at | time_tag: format: 'date' }}</p>
+                <p>{{ article.excerpt_or_content | strip_html | truncatewords: 30 }}</p>
+              </div>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+      {%- if paginate.pages > 1 -%}
+        {% render 'pagination', paginate: paginate %}
+      {%- endif -%}
+    {%- endpaginate -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Blog posts",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,47 @@
+<section class="section customer">
+  <div class="page-width page-width--narrow customer__box">
+    <div id="recover" class="customer__recover" hidden>
+      <h1 class="page__title">{{ 'customer.recover_password.title' | t }}</h1>
+      <p>{{ 'customer.recover_password.subtext' | t }}</p>
+      {%- form 'recover_customer_password' -%}
+        {%- if form.posted_successfully? -%}
+          <p class="form-message form-message--success">{{ 'customer.recover_password.success' | t }}</p>
+        {%- endif -%}
+        {{ form.errors | default_errors }}
+        <div class="field">
+          <label for="RecoverEmail">{{ 'customer.login_page.email' | t }}</label>
+          <input type="email" name="email" id="RecoverEmail" autocomplete="email" required>
+        </div>
+        <button type="submit" class="button">{{ 'customer.recover_password.submit' | t }}</button>
+        <p><a href="#login" data-toggle-recover>{{ 'customer.login_page.cancel' | t }}</a></p>
+      {%- endform -%}
+    </div>
+
+    <div id="login" class="customer__login">
+      <h1 class="page__title">{{ 'customer.login_page.title' | t }}</h1>
+      {%- form 'customer_login', novalidate: 'novalidate' -%}
+        {{ form.errors | default_errors }}
+        <div class="field">
+          <label for="CustomerEmail">{{ 'customer.login_page.email' | t }}</label>
+          <input type="email" name="customer[email]" id="CustomerEmail" autocomplete="email" required>
+        </div>
+        {%- if form.password_needed -%}
+          <div class="field">
+            <label for="CustomerPassword">{{ 'customer.login_page.password' | t }}</label>
+            <input type="password" name="customer[password]" id="CustomerPassword" autocomplete="current-password" required>
+          </div>
+          <p><a href="#recover" data-toggle-recover>{{ 'customer.login_page.forgot_password' | t }}</a></p>
+        {%- endif -%}
+        <button type="submit" class="button button--full">{{ 'customer.login_page.sign_in' | t }}</button>
+        <p><a href="{{ routes.account_register_url }}">{{ 'customer.login_page.create_account' | t }}</a></p>
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Customer login",
+  "settings": []
+}
+{% endschema %}

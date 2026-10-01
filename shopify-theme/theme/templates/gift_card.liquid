@@ -1,0 +1,26 @@
+{% layout none %}
+{%- assign gift_value = gift_card.initial_value | money -%}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{{ 'gift_cards.issued.title' | t: value: gift_value, shop: shop.name }}</title>
+    {% render 'css-variables' %}
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+    {{ content_for_header }}
+  </head>
+  <body class="template-gift-card">
+    <main class="section page-width page-width--narrow empty-state">
+      <h1 class="page__title">{{ shop.name }}</h1>
+      <p>{{ 'gift_cards.issued.subtext' | t }}</p>
+      <p class="h1">{{ gift_card.balance | money_with_currency }}</p>
+      {%- if gift_card.expired -%}
+        <p class="form-message form-message--error">{{ 'gift_cards.issued.expired' | t: expiry: gift_card.expires_on }}</p>
+      {%- endif -%}
+      <p><code class="gift-card__code">{{ gift_card.code | format_code }}</code></p>
+      <p><a href="{{ shop.url }}" class="button">{{ 'gift_cards.issued.shop_link' | t }}</a></p>
+      <button type="button" class="button button--secondary" onclick="window.print();">{{ 'gift_cards.issued.print' | t }}</button>
+    </main>
+  </body>
+</html>
