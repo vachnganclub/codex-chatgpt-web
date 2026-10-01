@@ -216,8 +216,16 @@ show_currency_code: true             low_stock_threshold: 5   show_cart_note: tr
 <h3>5 chỗ khác với demo — đều cần viết section mới</h3>
 <div class="tablewrap"><table><thead><tr><th>#</th><th>Demo có</th><th>Bản dựng được</th><th>Vì sao</th></tr></thead><tbody><tr><td>1</td><td>Hero 2 cột, dải 3 lá bài nghiêng bên phải</td><td>Banner full-width, chữ overlay</td><td><code>image-banner</code> là banner nền, không có layout 2 cột</td></tr><tr><td>2</td><td>Hàng 3 thông tin ở hero: Giao hàng · Đóng gói · Thanh toán</td><td>Không có</td><td><code>image-banner</code> chỉ có 3 block type: heading, text, button</td></tr><tr><td>3</td><td>2 thẻ card/pack cạnh nhau</td><td>1 cột dọc</td><td>Theme không có section multicolumn, và <code>link-cards</code> luôn bắt buộc có ảnh</td></tr><tr><td>4</td><td>Một lưới "Hàng mới về" gộp 2 dòng game</td><td>2 lưới riêng theo dòng game</td><td>Không có collection gộp, và smart collection của Shopify <strong>không lọc được theo ngày tạo</strong></td></tr><tr><td>5</td><td>Dải trích 3 feedback</td><td>Không có</td><td>Chưa có feedback thật, và trang feedback đang ẩn nên link sẽ 404</td></tr></tbody></table></div>
 <p>Muốn khớp tuyệt đối thì phải thêm 2 file section mới (<code>multicolumn.liquid</code> cho mục 3, và một section hero 2 cột cho mục 1–2). Nói nếu bạn muốn — tôi làm trên cùng bản sao này.</p>
-<h3>Cách publish</h3>
+<h3>Cách publish — <strong>phải làm tay, không tự động hoá được</strong></h3>
+<p>Tôi đã thử gọi <code>themePublish</code> và bị chặn:</p>
+<blockquote><em>Publishing a theme is blocked — making a theme live must be done manually in Shopify admin to prevent accidental storefront changes.</em></blockquote>
+<p>Đây là chính sách an toàn của tầng tool, không phải giới hạn của Shopify. Việc đổi theme đang live là loại thao tác phải có người bấm.</p>
 <ol start="1"><li>Mở link <strong>Xem trước</strong> ở trên, kiểm trang chủ trên cả desktop và điện thoại.</li><li>Admin → Online Store → Themes → tìm <code>tcg-vault-theme-4 — Home theo demo</code> → <strong>Publish</strong>.</li><li>Theme cũ <code>tcg-vault-theme-3</code> tự chuyển thành Unpublished, giữ làm bản lùi.</li></ol>
+<h3>Kiểm tra trước khi publish — đã chạy</h3>
+<p>So sánh toàn bộ file giữa hai theme: <strong>cả hai đúng 73 file, trùng tên và trùng dung lượng từng byte</strong>, chỉ khác đúng 3 file tôi sửa.</p>
+<div class="tablewrap"><table><thead><tr><th>File</th><th>Bản live</th><th>Bản sao</th></tr></thead><tbody><tr><td><code>templates/index.json</code></td><td>2 588 B</td><td>5 486 B</td></tr><tr><td><code>templates/page.feedback.json</code></td><td>1 261 B</td><td>125 B</td></tr><tr><td><code>templates/page.privacy-policy.json</code></td><td>331 B</td><td>123 B</td></tr></tbody></table></div>
+<p>Nghĩa là mọi thứ ngoài trang chủ và 2 template đó — màu, font, logo, header, footer, trang sản phẩm, giỏ hàng, form wholesale, <code>purchase_option_name</code>, tag prefix — <strong>giữ nguyên không đổi</strong>.</p>
+<p>Sau khi publish, store sẽ có 6 theme. Nên xoá bớt còn tối đa 2 (bản đang chạy + 1 bản lùi).</p>
 <blockquote>⚠️ <strong>Thứ tự quan trọng.</strong> Bản sao được tạo từ bản live tại thời điểm này. Nếu bạn sửa gì trong Theme Editor của <code>tcg-vault-theme-3</code> <strong>trước khi</strong> publish bản sao, phần sửa đó sẽ mất. Publish trước, rồi làm mọi việc Theme Editor còn lại ở mục 10a (bước 5–10) trên theme mới.</blockquote>
 <hr>
 <h2>Trạng thái tổng kết</h2>

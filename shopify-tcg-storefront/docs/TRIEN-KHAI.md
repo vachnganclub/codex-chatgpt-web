@@ -297,11 +297,35 @@ Nghĩa là mục 10a bước 1 và 2 ở trên **đã xong** nếu bạn publish
 Muốn khớp tuyệt đối thì phải thêm 2 file section mới (`multicolumn.liquid` cho mục 3, và một
 section hero 2 cột cho mục 1–2). Nói nếu bạn muốn — tôi làm trên cùng bản sao này.
 
-### Cách publish
+### Cách publish — **phải làm tay, không tự động hoá được**
+
+Tôi đã thử gọi `themePublish` và bị chặn:
+
+> *Publishing a theme is blocked — making a theme live must be done manually in Shopify admin to
+> prevent accidental storefront changes.*
+
+Đây là chính sách an toàn của tầng tool, không phải giới hạn của Shopify. Việc đổi theme đang
+live là loại thao tác phải có người bấm.
 
 1. Mở link **Xem trước** ở trên, kiểm trang chủ trên cả desktop và điện thoại.
 2. Admin → Online Store → Themes → tìm `tcg-vault-theme-4 — Home theo demo` → **Publish**.
 3. Theme cũ `tcg-vault-theme-3` tự chuyển thành Unpublished, giữ làm bản lùi.
+
+### Kiểm tra trước khi publish — đã chạy
+
+So sánh toàn bộ file giữa hai theme: **cả hai đúng 73 file, trùng tên và trùng dung lượng từng
+byte**, chỉ khác đúng 3 file tôi sửa.
+
+| File | Bản live | Bản sao |
+|---|---|---|
+| `templates/index.json` | 2 588 B | 5 486 B |
+| `templates/page.feedback.json` | 1 261 B | 125 B |
+| `templates/page.privacy-policy.json` | 331 B | 123 B |
+
+Nghĩa là mọi thứ ngoài trang chủ và 2 template đó — màu, font, logo, header, footer, trang sản
+phẩm, giỏ hàng, form wholesale, `purchase_option_name`, tag prefix — **giữ nguyên không đổi**.
+
+Sau khi publish, store sẽ có 6 theme. Nên xoá bớt còn tối đa 2 (bản đang chạy + 1 bản lùi).
 
 > ⚠️ **Thứ tự quan trọng.** Bản sao được tạo từ bản live tại thời điểm này. Nếu bạn sửa gì trong
 > Theme Editor của `tcg-vault-theme-3` **trước khi** publish bản sao, phần sửa đó sẽ mất. Publish
