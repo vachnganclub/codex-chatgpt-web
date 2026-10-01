@@ -1,0 +1,110 @@
+<title>ADAMANTILE TCG</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Public+Sans:ital,wght@0,400..700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+
+<!-- S09 · Market bar + prototype controls (prototype-only row sits above the real header) -->
+<div class="topbar">
+  <div class="rail">
+    <span class="note">Bản thiết kế giao diện · dữ liệu là chỗ trống mẫu</span>
+    <span class="spacer"></span>
+    <div class="proto">
+      <button type="button" id="btn-anno" aria-pressed="false">Chú thích S00–S11</button>
+      <button type="button" id="btn-phone" aria-pressed="false">Xem mobile</button>
+      <button type="button" id="btn-theme" aria-pressed="false">Nền tối</button>
+      <button type="button" id="btn-reset">Xoá giỏ</button>
+    </div>
+  </div>
+</div>
+
+<!-- S09 · Header: logo, menu chính, bộ chọn quốc gia/tiền tệ, giỏ hàng -->
+<header class="site-header">
+  <div class="rail">
+    <a class="brand" href="#home">
+      <span class="glyph">S</span>
+      <span class="wordmark">ADAMANTILE<small>Logo · khách cung cấp</small></span>
+    </a>
+
+    <nav class="nav" id="main-nav" aria-label="Menu chính"></nav>
+
+    <div class="header-tools">
+      <div class="market-select">
+        <span class="flag" id="market-flag" aria-hidden="true">🇺🇸</span>
+        <label class="sr" for="market">Chọn quốc gia và tiền tệ</label>
+        <select id="market"></select>
+      </div>
+      <a class="cart-btn" href="#cart">
+        Giỏ<span class="cart-count" id="cart-count">0</span>
+      </a>
+      <button class="burger" type="button" id="burger" aria-expanded="false" aria-controls="drawer">
+        <span></span><span class="sr">Mở menu</span>
+      </button>
+    </div>
+  </div>
+  <div class="drawer" id="drawer"><div class="rail"><nav id="drawer-nav" aria-label="Menu điện thoại"></nav></div></div>
+</header>
+
+<main id="view" class="page"></main>
+
+<!-- S09 · Footer -->
+<footer class="site-footer">
+  <div class="rail">
+    <div class="anno"><b>S09 · Footer</b> — theme section “Footer” + 3 menu trong Navigation. Mọi liên kết ở đây phải tồn tại trước khi go-live.</div>
+    <div class="fcols">
+      <div class="fcol">
+        <a class="brand" href="#home" style="margin-bottom:10px">
+          <span class="glyph">S</span>
+          <span class="wordmark">ADAMANTILE<small>Pokémon · One Piece</small></span>
+        </a>
+        <p style="font-size:.86rem;color:var(--muted);max-width:30ch">Thẻ bài lẻ và pack số lượng lớn, giao từ <span class="ph">[Thành phố, Quốc gia]</span>.</p>
+      </div>
+      <div class="fcol">
+        <h4>Mua hàng</h4>
+        <ul>
+          <li><a href="#pokemon">Pokémon</a></li>
+          <li><a href="#one-piece">One Piece</a></li>
+          <li><a href="#singles">Mua lẻ (card)</a></li>
+          <li><a href="#bulk">Mua số lượng lớn (pack)</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h4>Hỗ trợ</h4>
+        <ul>
+          <li><a href="#wholesale">Wholesale Inquiry</a></li>
+          <li><a href="#feedback">Feedback khách hàng</a></li>
+          <li><a href="#privacy">Privacy &amp; Cookie Policy</a></li>
+          <li><a href="#spec">Bảng giao việc (nội bộ)</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h4>Liên hệ</h4>
+        <ul>
+          <li><span class="ph">[email@tenshop.com]</span></li>
+          <li><span class="ph">[WhatsApp]</span> · <span class="ph">[LINE]</span></li>
+          <li><span class="ph">[Instagram]</span> · <span class="ph">[Telegram]</span></li>
+        </ul>
+        <p style="font-size:.78rem;color:var(--muted);margin-top:10px">Chưa gắn link thật — chờ khách cung cấp.</p>
+      </div>
+    </div>
+    <div class="fbottom">
+      <span>© <span class="ph">[Tên pháp nhân]</span> · <span class="ph">[Số ĐKKD]</span></span>
+      <span id="foot-market">Thị trường: United States · USD</span>
+    </div>
+  </div>
+</footer>
+
+<!-- S05 · Cookie banner -->
+<div class="cookie" id="cookie" hidden>
+  <div class="rail">
+    <p><b>Cookie.</b> Chúng tôi dùng cookie cần thiết để giỏ hàng và thanh toán hoạt động, và cookie phân tích nếu bạn đồng ý. Xem <a href="#privacy">Cookie Policy</a>.</p>
+    <div class="acts">
+      <button class="btn btn-outline" type="button" data-cookie="reject">Chỉ cookie cần thiết</button>
+      <button class="btn btn-primary" type="button" data-cookie="accept">Đồng ý tất cả</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="app.js"></script>
